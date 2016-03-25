@@ -1,2 +1,3 @@
 # IE12
-A oh-so-terrible browser implemented in Verilog
+A oh-so-terrible HTML rendering engine implemented for
+DE1-SoC (C5SEMA5F31C6).
