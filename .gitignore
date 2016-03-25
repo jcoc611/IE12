@@ -1,6 +1,6 @@
 # Verilog
 work
-.wlf
+*.wlf
 
 # Mac
 .DS_Store

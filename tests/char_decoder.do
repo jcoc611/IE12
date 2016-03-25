@@ -1,9 +1,11 @@
+cd ..
+
 # Set the working dir, where all compiled Verilog goes.
-vlib ../work
+vlib work
 
 # Compile all verilog modules in ramtest.v to working dir;
 # could also have multiple verilog files.
-vlog ../src/char_decoder.v
+vlog src/char_decoder.v
 
 # Load simulation using mux as the top level simulation module.
 vsim char_decoder
