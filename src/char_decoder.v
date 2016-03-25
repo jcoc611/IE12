@@ -1,11 +1,16 @@
 `timescale 1 ps / 1 ps
-// Transforms an ASCII character
-// into pixels (a 128 bus)
 // Some Chars are not supported...
 
+/**
+ * Transforms an ASCII character into a 8x16 bitmap
+ * of monochrome pixels.
+ * @param char The ASCII 7-bit character to be decoded
+ * @output pixels The bitmap representing this character
+ * as a 128-bit bus.
+ */
 module char_decoder(
 	input   [6:0] char,
-	output reg [128:0] pixels
+	output reg [127:0] pixels
 );
 	localparam undefined =  128'b00000000000000000000000011111111110000111010010110100101100110011001100110100101110000111111111100000000000000000000000000000000;
 
