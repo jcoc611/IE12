@@ -2,11 +2,11 @@
  * Renders a square of a given size.
  */
 module square_renderer(
-	input                         clock,
+	input                    clock,
 	input      [`X_BITES] origin_x,
 	input      [`Y_BITES] origin_y,
-	input [`SQUARE_BITES] size,
-	input                state_enabled,
+	input [`SQUARE_BITES]     size,
+	input            state_enabled,
 
 	output     [`X_BITES] out_x,
 	output     [`Y_BITES] out_y,
