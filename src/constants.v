@@ -14,6 +14,6 @@
 /**
  * Some rendering bites.
  */
-`define X_BITES X_MAX_BIT-1:0
-`define Y_BITES Y_MAX_BIT-1:0
+`define X_BITES `X_MAX_BIT-1:0
+`define Y_BITES `Y_MAX_BIT-1:0
 `define SQUARE_BITES 5:0
