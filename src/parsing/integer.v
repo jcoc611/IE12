@@ -16,8 +16,13 @@ module integer_parser(
 	always @(posedge clock) begin
 		if(state_enable == 1) begin
 			if(has_finished == 0) begin
-				// Read digits
-				value <= (value * 10) + char_val;
+				if(char == " ") begin
+					has_finished <= 1;
+				end else begin
+					// Read digits
+					value <= (value * 10) + char_val;	
+				end
+				
 			end
 		end else begin
 			has_finished <= 0;
