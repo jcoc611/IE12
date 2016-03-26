@@ -24,9 +24,9 @@ module square_renderer(
 
 	always @(posedge clock) begin
 		if (state_enabled == 1) begin
-			if(current_x - origin_x == size) begin
+			if(current_x - origin_x + 1 == size) begin
 				// Finished row
-				if(current_y - origin_y == size) begin
+				if(current_y - origin_y  + 1 == size) begin
 					// Finished drawing square
 					state_finished <= 1;
 				end else begin

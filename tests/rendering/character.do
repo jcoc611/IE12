@@ -17,7 +17,7 @@ add wave {/*}
 
 
 # Let renderer reset
-force {char} 10000001
+force {char} 1000001
 force {origin_x} 0
 force {origin_y} 0
 force {size} 1

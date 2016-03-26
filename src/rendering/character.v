@@ -16,15 +16,16 @@ module character_renderer(
 	output reg        has_finished
 );
 
-	reg state_pixel_index = 0;
+	reg [`FONT_INDEX_BITES] state_pixel_index = 0;
+	reg state_init_square = 0;
 
 	/** Initialize registries. */
 	initial has_finished = 0;
 	initial is_drawing = 0;
 
 	reg square_state_enabled = 0;
-	reg square_origin_x;
-	reg square_origin_y;
+	reg [`X_BITES] square_origin_x;
+	reg [`Y_BITES] square_origin_y;
 	wire square_state_finished;
 
 	square_renderer sq(
@@ -46,28 +47,34 @@ module character_renderer(
 		decoder_pixels
 	);
 
-	always @(posedge clock){
+	always @(posedge clock) begin
 		if(state_enabled == 1) begin
 			if(state_pixel_index == `FONT_MAX_BIT) begin
 				// We are done drawing char
 				has_finished <= 1;
 			end else begin
 				// Still pixels to go
-				if(square_state_enabled == 1) begin
-					if(square_state_finished == 1) begin
-						square_state_enabled <= 0;
-						state_pixel_index <= state_pixel_index + 1;
-					end
-				end	else begin
-					if(decoder_pixels[state_pixel_index] == 1) begin
-						// Figure out origin for next pixel
-						square_origin_x <= size * (state_pixel_index % `FONT_WIDTH);
-						square_origin_y <= size * (state_pixel_index / `FONT_WIDTH);
-						square_state_enabled <= 1;
+				if(state_init_square == 1) begin
+					state_init_square <= 0;
+					square_state_enabled <= 1;
+				end else begin
+					if(square_state_enabled == 1) begin
+						if(square_state_finished == 1) begin
+							square_state_enabled <= 0;
+							state_pixel_index <= state_pixel_index + 1;
+						end
 					end else begin
-						state_pixel_index <= state_pixel_index + 1;
-					end
- 				end
+						if(decoder_pixels[`FONT_MAX_BIT - state_pixel_index] == 1) begin
+							// Figure out origin for next pixel
+							square_origin_x <= size * (state_pixel_index % `FONT_WIDTH);
+							square_origin_y <= size * (state_pixel_index / `FONT_WIDTH);
+							state_init_square <= 1;
+						end else begin
+							state_pixel_index <= state_pixel_index + 1;
+						end
+	 				end	
+				end
+				
 			end
 		end else begin
 			square_origin_x <= origin_x;
@@ -75,5 +82,5 @@ module character_renderer(
 			square_state_enabled <= 0;
 			state_pixel_index <= 0;
 		end
-	}
+	end
 endmodule
