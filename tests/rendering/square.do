@@ -1,14 +1,14 @@
-cd ..
+#cd ../..
 
 # Set the working dir, where all compiled Verilog goes.
 vlib work
 
 # Compile all verilog modules in ramtest.v to working dir;
 # could also have multiple verilog files.
-vlog src/char_decoder.v
+vlog src/constants.v src/rendering/square.v
 
 # Load simulation using mux as the top level simulation module.
-vsim char_decoder
+vsim square_renderer
 
 # Log all signals and add some signals to waveform window.
 log {/*}
@@ -16,14 +16,15 @@ log {/*}
 add wave {/*}
 
 
-# Test undefined chars
-force {char} 7'b0100001
-run 20ms
+# Let renderer reset
+force {origin_x} 0
+force {origin_y} 0
+force {size} 11
+force {state_enabled} 0
+force {clock} 1 0, 0 5 -r 10
+run 20ns
 
-# Test known char (A)
-force {char} 7'b1000001
-run 20ms
-
-# Test char outside bounds (\0)
-force {char} 7'b0000000
-run 20ms
+# Render 3x3 square at (0,0)
+force {state_enabled} 1
+force {clock} 1 0, 0 5 -r 10
+run 100ns
