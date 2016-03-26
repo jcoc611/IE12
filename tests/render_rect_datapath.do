@@ -16,12 +16,12 @@ force {resetn} 0
 # feed x data in 15, y in 32 at 100
 force {data_in} 7'b0001111 0, 7'b0100000 100
 # ld_x is 1 for one clock cycle
-force {ld_x} 0 20, 0 40
+
 force {ld_x} 1 40, 0 60
 
 # ld_y is 1 for one clock cycle
-force {ld_x} 0 60, 0 120
-force {ld_x} 1 120, 0 140
+
+force {ld_y} 1 120, 0 140
 
 # start_count is 0
 force {start_count} 0
@@ -36,7 +36,7 @@ run 40 ns
 
 # change the values of data in to 0
 # start_count is 1 for one clock cycle
-force {start_count} 0 250, 0 260
-force {start_count} 1 260, 0 280
+
+force {start_count} 1 20, 0 40
 
 run 400 ns

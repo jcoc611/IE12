@@ -21,7 +21,6 @@ module datapath(
 
     // load the registers
     always@(*) begin
-        count_signal = start_count;
 
         if (resetn) begin
             x = 8'b0;
