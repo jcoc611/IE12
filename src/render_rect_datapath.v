@@ -1,3 +1,6 @@
+`timescale 1 ns / 1 ns
+`include "counter.v"
+
 module datapath(
     input clk,          // clock
     input resetn,       // resetn (~KEY)

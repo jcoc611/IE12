@@ -1,5 +1,3 @@
-# cd ../src
-
 vlib work
 vlog src/counter.v
 vsim counter
