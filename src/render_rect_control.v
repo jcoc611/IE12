@@ -3,7 +3,7 @@
 module control(
     input clk,          // the clock to perform FSM transitions
     input resetn,       // the reset signal for the screen (~KEY input)
-    input load,         // the transition signal for the FSM (~KEY input)
+    input enable,         // the transition signal for the FSM (~KEY input)
     input draw,         // the draw signal for the FSM (~KEY input)
 
     output reg ld_x, ld_y,      // load signals for the x, y coord regs
@@ -23,10 +23,10 @@ module control(
     // sequential state transition function
     always@(*) begin: state_table
         case (current_state)
-            S_LOAD_X: next_state = load ? S_WAIT_X : S_LOAD_X;
-            S_WAIT_X: next_state = load ? S_WAIT_X : S_LOAD_Y;
-            S_LOAD_Y: next_state = load ? S_WAIT_Y : S_LOAD_Y;
-            S_WAIT_Y: next_state = load ? S_WAIT_Y : S_WAIT_DRAW;
+            S_LOAD_X: next_state = enable ? S_WAIT_X : S_LOAD_X;
+            S_WAIT_X: next_state = enable ? S_WAIT_X : S_LOAD_Y;
+            S_LOAD_Y: next_state = enable ? S_WAIT_Y : S_LOAD_Y;
+            S_WAIT_Y: next_state = enable ? S_WAIT_Y : S_WAIT_DRAW;
             S_WAIT_DRAW: next_state = draw ? S_DRAW : S_WAIT_DRAW;
             S_DRAW: next_state = S_LOAD_X;
         default: next_state = S_LOAD_X;
