@@ -1,4 +1,5 @@
-`timescale 1 ps / 1 ps
+`timescale 1 ns / 1 ns
+// TODO: change back to ps
 `include "counter.v"
 
 module render_rect
@@ -73,10 +74,10 @@ module render_rect
     wire ld_x, ld_y, drawing, start_count;
 
     // Instansiate datapath
-	datapath d0(CLOCK_50, resetn, SW[6:0], ld_x, ld_y, start_count, x, y, drawing);
+	datapath d0(CLOCK_50, resetn, SW[6:0], ld_x, ld_y, start_count, x, y, writeEn);
 
     // Instansiate FSM control
-    control c0(CLOCK_50, resetn, load, draw, drawing, ld_x, ld_y, start_count, writeEn);
+    control c0(CLOCK_50, resetn, load, draw, ld_x, ld_y, start_count);
 
     assign color = SW[9:7];
 
@@ -87,11 +88,9 @@ module control(
     input resetn,       // the reset signal for the screen (~KEY input)
     input load,         // the transition signal for the FSM (~KEY input)
     input draw,         // the draw signal for the FSM (~KEY input)
-    input drawing      // signal from counter counting
 
     output reg ld_x, ld_y,      // load signals for the x, y coord regs
-    output reg start_count      // signal to start counting to draw the box
-    output reg writeEn          // signal to VGA to draw or not
+    output reg start_count,      // signal to start counting to draw the box
     );
     // we have a total of 6 states
     reg [2:0] current_state, next_state;
@@ -111,7 +110,7 @@ module control(
             S_LOAD_Y: next_state = load ? S_WAIT_Y : S_LOAD_Y;
             S_WAIT_Y: next_state = load ? S_WAIT_Y : S_WAIT_DRAW;
             S_WAIT_DRAW: next_state = draw ? S_DRAW : S_WAIT_DRAW;
-            S_DRAW: next_state = drawing ? S_DRAW: S_LOAD_X;
+            S_DRAW: next_state = S_LOAD_X;
         default: next_state = S_LOAD_X;
         endcase
     end     // state_table
@@ -121,15 +120,11 @@ module control(
         ld_x = 1'b0;
         ld_y = 1'b0;
         start_count = 1'b0;
-        writeEn = 1'b0;
 
         case (current_state)
             S_LOAD_X: ld_x = 1'b1;
             S_LOAD_Y: ld_y = 1'b1;
-            S_DRAW: begin
-                start_count = 1'b1;
-                writeEn = 1'b1;
-            end
+            S_DRAW: start_count = 1'b1;
         endcase
     end     // enable_signals
 
@@ -150,8 +145,8 @@ module datapath(
 
     output reg [7:0] r_x, // the result x register
     output reg [6:0] r_y,  // the result y register
-    output counting     // if the counter inside is  counting
-    // note writeEn and color are directly passed to the VGA by other modules
+    output writeEn     // signal to VGA to draw or not, given by counter
+    // note color is directly passed to the VGA by other modules
     );
 
     reg [7:0] x;
@@ -175,7 +170,7 @@ module datapath(
 
     wire [3:0] offset;
 
-    counter c0(clk, count_signal, counting, offset);
+    counter c0(clk, count_signal, writeEn, offset);
 
     // output result registers
     always@(posedge clk) begin
@@ -188,6 +183,4 @@ module datapath(
             r_y = y + offset[1:0];
         end
     end
-
-
 endmodule

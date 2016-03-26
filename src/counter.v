@@ -31,8 +31,5 @@ module counter(
 		end
 	end
 endmodule
-// TODO: change render_rect to give writeEn out from counter, not FSM,
-// otherwise infinite looping occurs
-// TODO: also change the ns back to ps after testing
 
 
