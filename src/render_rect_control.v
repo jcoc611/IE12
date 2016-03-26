@@ -21,28 +21,28 @@ module control(
                 S_DRAW      = 3'd5;
 
     // sequential state transition function
-    always@(clk) begin: state_table
+    always@(*) begin: state_table
         case (current_state)
-            S_LOAD_X: next_state <= enable ? S_WAIT_X : S_LOAD_X;
-            S_WAIT_X: next_state <= enable ? S_WAIT_X : S_LOAD_Y;
-            S_LOAD_Y: next_state <= enable ? S_WAIT_Y : S_LOAD_Y;
-            S_WAIT_Y: next_state <= enable ? S_WAIT_Y : S_WAIT_DRAW;
-            S_WAIT_DRAW: next_state <= draw ? S_DRAW : S_WAIT_DRAW;
-            S_DRAW: next_state <= S_LOAD_X;
+            S_LOAD_X: next_state = enable ? S_WAIT_X : S_LOAD_X;
+            S_WAIT_X: next_state = enable ? S_WAIT_X : S_LOAD_Y;
+            S_LOAD_Y: next_state = enable ? S_WAIT_Y : S_LOAD_Y;
+            S_WAIT_Y: next_state = enable ? S_WAIT_Y : S_WAIT_DRAW;
+            S_WAIT_DRAW: next_state = draw ? S_DRAW : S_WAIT_DRAW;
+            S_DRAW: next_state = S_LOAD_X;
         default: next_state = S_LOAD_X;
         endcase
     end     // state_table
 
     // output signals to datapath
-    always@(clk) begin: enable_signals
-        ld_x <= 1'b0;
-        ld_y <= 1'b0;
-        start_count <= 1'b0;
+    always@(*) begin: enable_signals
+        ld_x = 1'b0;
+        ld_y = 1'b0;
+        start_count = 1'b0;
 
         case (current_state)
-            S_WAIT_X: ld_x <= 1'b1;
-            S_WAIT_Y: ld_y <= 1'b1;
-            S_DRAW: start_count <= 1'b1;
+            S_WAIT_X: ld_x = 1'b1;
+            S_WAIT_Y: ld_y = 1'b1;
+            S_DRAW: start_count = 1'b1;
         endcase
     end     // enable_signals
 
