@@ -3,15 +3,15 @@
 module control(
     input clk,          // the clock to perform FSM transitions
     input resetn,       // the reset signal for the screen (~KEY input)
+
     input enable,         // the transition signal for the FSM (~KEY input)
     input draw,         // the draw signal for the FSM (~KEY input)
 
     output reg ld_x, ld_y,      // load signals for the x, y coord regs
     output reg start_count,      // signal to start counting to draw the box
-    output reg [2:0] current_state
     );
     // we have a total of 6 states
-    reg [2:0] next_state;
+    reg [2:0] current_state, next_state;
 
     localparam  S_LOAD_X    = 3'd0,
                 S_WAIT_X    = 3'd1,
