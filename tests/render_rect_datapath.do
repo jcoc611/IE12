@@ -1,6 +1,6 @@
 vlib work
 vlog src/render_rect_datapath.v
-vsim counter
+vsim datapath
 
 log {/*}
 add wave {/*}
