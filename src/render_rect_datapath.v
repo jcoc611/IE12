@@ -38,14 +38,14 @@ module datapath(
     counter c0(clk, start_count, writeEn, offset);
 
     // output result registers
-    always@(posedge clk) begin
+    always@(clk) begin
         if (resetn) begin
             r_x <= 8'b0;
             r_y <= 7'b0;
         end
         else begin
-            r_x = x + offset[1:0];
-            r_y = y + offset[3:2];
+            r_x <= x + offset[1:0];
+            r_y <= y + offset[3:2];
         end
     end
 endmodule
