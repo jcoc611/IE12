@@ -7,7 +7,7 @@ module datapath(
 
     input [6:0] data_in, // input X, Y coordinates
 
-    input ld_x, ld_y    // wether to load x and y into registers
+    input ld_x, ld_y,    // wether to load x and y into registers
     input start_count,  // start counting signal
 
     output reg [7:0] r_x, // the result x register
@@ -16,28 +16,27 @@ module datapath(
     // note color is directly passed to the VGA by other modules
     );
 
-    reg [7:0] x;
-    reg [6:0] y;
-    reg count_signal;
+    reg [7:0] x;        // storage for input x
+    reg [6:0] y;        // storage for input y
 
     // load the registers
-    always@(posedge clk) begin
-        count_signal <= start_count;
+    always@(*) begin
+        count_signal = start_count;
 
         if (resetn) begin
-            x <= 8'b0;
-            y <= 7'b0;
+            x = 8'b0;
+            y = 7'b0;
         end else begin
             if (ld_x)
-                x <= {1'b0, data_in};
+                x = {1'b0, data_in};
             if (ld_y)
-                y <= data_in;
+                y = data_in;
         end
     end
 
     wire [3:0] offset;
 
-    counter c0(clk, count_signal, writeEn, offset);
+    counter c0(clk, start_count, writeEn, offset);
 
     // output result registers
     always@(posedge clk) begin
@@ -47,7 +46,7 @@ module datapath(
         end
         else begin
             r_x = x + offset[1:0];
-            r_y = y + offset[1:0];
+            r_y = y + offset[3:2];
         end
     end
 endmodule

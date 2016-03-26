@@ -10,8 +10,8 @@ add wave {/*}
 # get clock running
 force {clk} 0 0, 1 10 -r 20
 
-# reset initially
-force {resetn} 1 0, 0 20
+# don't reset
+force {resetn} 0
 
 # feed x data in 15, y in 32 at 100
 force {data_in} 7'b0001111 0, 7'b0100000 100
@@ -30,10 +30,13 @@ run 200 ns
 
 # remain at 0 forever
 force {data_in} 7'b0
+force {start_count} 0
+
 run 40 ns
 
 # change the values of data in to 0
 # start_count is 1 for one clock cycle
+force {start_count} 0 250, 0 260
 force {start_count} 1 260, 0 280
 
 run 400 ns

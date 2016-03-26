@@ -14,7 +14,7 @@ force {clk} 0 0, 1 10 -r 20
 force {resetn} 0
 
 # alternate the enable signal
-force {enable} 0 0, 1 20 -r 40
+force {enable} 0 0, 1 5 -r 20
 
 # draw signal is on later
 force {draw} 0 0, 0 200
