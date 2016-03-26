@@ -8,7 +8,7 @@ module control(
     input draw,         // the draw signal for the FSM (~KEY input)
 
     output reg ld_x, ld_y,      // load signals for the x, y coord regs
-    output reg start_count,      // signal to start counting to draw the box
+    output reg start_count     // signal to start counting to draw the box
     );
     // we have a total of 6 states
     reg [2:0] current_state, next_state;
