@@ -15,21 +15,21 @@ module render_rect
         input enable,                     // the 1 means start drawing, when 0 means reset to start state
 
         // rect attributes
-        input [8:0] origin_x,             //  the origin x of rect
-        input [7:0] origin_y,             //  the origin y of rect
+        input [`X_BITES] origin_x,             //  the origin x of rect
+        input [`Y_BITES] origin_y,             //  the origin y of rect
 
-        input [8:0] width,                //  the width (x) of rect
-        input [7:0] height,               //  the height (y) of rect
+        input [`X_BITES] width,                //  the width (x) of rect
+        input [`Y_BITES] height,               //  the height (y) of rect
 
-        input [2:0] back_color,           //  background color
+        input [`COLOR_BITES] back_color,           //  background color
         input border,                     //  high active border signal
-        input [2:0] border_color,         //  border color
+        input [`COLOR_BITES] border_color,         //  border color
 
         output done,                      // done signal, 0 means not done, 1 means done, stays at 1 until enable reset
 
-        output [2:0] color_stream,     // output color stream
-        output [8:0] x_stream,         // the stream output for x coords
-        output [7:0] y_stream,         // the stream output for y coords
+        output [`COLOR_BITES] color_stream,     // output color stream
+        output [`X_BITES] x_stream,         // the stream output for x coords
+        output [`Y_BITES] y_stream,         // the stream output for y coords
         output writeEn                // write enable for the VGA
 );
 
@@ -41,24 +41,24 @@ module datapath(
     input clk,
     input enable,                   // enable / ~resetn
 
-    input [8:0] origin_x,
-    input [7:0] origin_y,
-    input [8:0] width,
-    input [7:0] height,
+    input [`X_BITES] origin_x,
+    input [`Y_BITES] origin_y,
+    input [`X_BITES] width,
+    input [`Y_BITES] height,
 
-    input [2:0] back_color,
+    input [`COLOR_BITES] back_color,
     input  border,
-    input [2:0] border_color,
+    input [`COLOR_BITES] border_color,
 
     output reg done,
 
-    output reg [2:0] color_stream,
-    output reg [8:0] x_stream,
-    output reg [7:0] y_stream,
+    output reg [`COLOR_BITES] color_stream,
+    output reg [`X_BITES] x_stream,
+    output reg [`Y_BITES] y_stream,
     output writeEn
 );
 
-    wire [16:0] offset;
+    wire [`X_Y_PRODUCT_BITES] offset;
 
     reg start_signal = 0;
 
@@ -73,12 +73,12 @@ module datapath(
     end
 
     // counter should not be fed in enable
-    wire [16:0] limit = width * height;
+    wire [`X_Y_PRODUCT_BITES] limit = width * height;
     // input clk,              // clock
     // input start_count,      // signal to start counting
-    // input [16:0] limit,         // the number to count upto
+    // input [`X_Y_PRODUCT_BITES] limit,         // the number to count upto
     // output reg counting,    // whether the clock is still counting
-    // output reg [16:0] result // resulting output
+    // output reg [`X_Y_PRODUCT_BITES] result // resulting output
     counter c0(clk, start_signal, limit, writeEn, offset);
 
     // load the output registers

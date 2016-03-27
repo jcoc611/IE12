@@ -9,7 +9,7 @@
 `define FONT_WIDTH 8
 `define FONT_HEIGHT 16
 
-/** 
+/**
  * The number of bites required to represent
  * x and y coordinates in our screen.
  * Depends on screen size.
@@ -37,6 +37,7 @@
 `define ATTRIBUTE_TYPE_BITES `ATTRIBUTE_TYPE_MAX_BIT-1:0
 `define ATTRIBUTE_VAL_BITES `ATTRIBUTE_VAL_MAX_BIT-1:0
 `define FONT_INDEX_BITES `FONT_INDEX_MAX_BIT-1:0
+`define X_Y_PRODUCT_BITES 16:0
 
 /**
  * Constants for attribute types.
