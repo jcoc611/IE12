@@ -59,30 +59,32 @@ module datapath(
     );
 
     wire [16:0] offset;
-    counter c0(clk, enable, width * height, writeEn, offset);   // TODO: give counter a bit input to counter upto
-
+    counter c0(clk, enable, width * height, writeEn, offset);
     // load the output registers
-    always@(posedge clk) begin
+    always@(*) begin
         if (!enable) begin
-            x_stream <= origin_x;
-            y_stream <= origin_y;
-            color_stream <= border ? border_color : back_color;
-            writeEn <= 0;
-            done <= 0;
+            x_stream = origin_x;
+            y_stream = origin_y;
+            color_stream = border ? border_color : back_color;
+            writeEn = 0;
+            done = 0;
         end else begin
             // enable is on, start drawing the square
             if (border) begin
                 // border offsets only occur when
-                x_stream <= origin_x + ((((offset % width) == 9'b0) || ((offset % width) == width - 1) || ((offset / width) == 8'b0) || ((offset / width) == height - 1)) ? offset % width : 9'b0);
-                y_stream <= origin_y + ((((offset % width) == 9'b0) || ((offset % width) == width - 1) || ((offset / width) == 8'b0) || ((offset / width) == height - 1)) ? offset / width : 8'b0);
-                color_stream <= ((((offset % width) == 9'b0) || ((offset % width) == width - 1) || ((offset / width) == 8'b0) || ((offset / width) == height - 1)) ? border_color : back_color);
+                x_stream = origin_x + ((((offset % width) == 9'b0) || ((offset % width) == width - 1) || ((offset / width) == 8'b0) || ((offset / width) == height - 1)) ? offset % width : 9'b0);
+                y_stream = origin_y + ((((offset % width) == 9'b0) || ((offset % width) == width - 1) || ((offset / width) == 8'b0) || ((offset / width) == height - 1)) ? offset / width : 8'b0);
+                color_stream = ((((offset % width) == 9'b0) || ((offset % width) == width - 1) || ((offset / width) == 8'b0) || ((offset / width) == height - 1)) ? border_color : back_color);
             end else begin
-                x_stream <= origin_x + (offset % width);
-                y_stream <= origin_y + (offset / width);
-                color_stream <= back_color;
-                // writeEn is handled by counter
-                done <= ~writeEn;
+                x_stream = origin_x + (offset % width);
+                y_stream = origin_y + (offset / width);
+                color_stream = back_color;
             end
+
+            x_stream = (x_stream >= 9'd320) ? 9'd319 : x_stream;
+            y_stream = (y_stream >= 9'd240) ? 9'd239 : y_stream;
+            // writeEn is handled by counter
+            done = ~writeEn;
         end
     end
 endmodule
