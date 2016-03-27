@@ -53,30 +53,30 @@ module attribute_parser(
 						state_type_found <= 1;
 						case (char)
 							// Color
-							"c": out_type <= 0;
+							"c": out_type <= `ATT_COLOR;
 							// Size
-							"i": out_type <= 1;
+							"i": out_type <= `ATT_SIZE;
 							// Width
-							"w": out_type <= 2;
+							"w": out_type <= `ATT_WIDTH;
 							// Height
-							"e": out_type <= 3;
+							"e": out_type <= `ATT_HEIGHT;
 							// src : href
-							"r": out_type <= (state_last_char == "s")? 4 : 5;
+							"r": out_type <= (state_last_char == "s")? `ATT_SRC : `ATT_HREF;
 							// bg, padding, margin
 							"a": begin
 								if(state_last_char == "b") begin
 									// Background
-									out_type <= 6;	
+									out_type <= `ATT_BG;
 								end else if(state_last_char == "p") begin
 									// Padding
-									out_type <= 7;
+									out_type <= `ATT_PADDING;
 								end else begin
 									// Margin
-									out_type <= 8;
+									out_type <= `ATT_MARGIN;
 								end
 							end
 							// border: position
-							"o": out_type <= (state_last_char == "b")? 9: 10;
+							"o": out_type <= (state_last_char == "b")? `ATT_BORDER: `ATT_POSITION;
 							default: state_type_found <= 0;
 						endcase
 						state_last_char <= char;

@@ -33,3 +33,18 @@
 `define ATTRIBUTE_TYPE_BITES `ATTRIBUTE_TYPE_MAX_BIT-1:0
 `define ATTRIBUTE_VAL_BITES `ATTRIBUTE_VAL_MAX_BIT-1:0
 `define FONT_INDEX_BITES `FONT_INDEX_MAX_BIT-1:0
+
+/**
+ * Constants for attribute types.
+ */
+`define ATT_COLOR 0
+`define ATT_SIZE 1
+`define ATT_WIDTH 2
+`define ATT_HEIGHT 3
+`define ATT_SRC 4
+`define ATT_HREF 5
+`define ATT_BG 6
+`define ATT_PADDING 7
+`define ATT_MARGIN 8
+`define ATT_BORDER 9
+`define ATT_POSITION 10
