@@ -1,5 +1,5 @@
 vlib work
-vlog src/render_rect.v
+vlog src/render_rect/render_rect.v
 vsim render_rect
 
 log {/*}

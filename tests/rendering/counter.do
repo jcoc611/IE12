@@ -1,5 +1,5 @@
 vlib work
-vlog src/counter.v
+vlog src/rendering/counter.v
 vsim counter
 
 log {/*}
