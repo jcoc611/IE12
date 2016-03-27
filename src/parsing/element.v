@@ -38,7 +38,7 @@ module element_parser(
 		attribute_value
 	);
 
-	always @(posedge clock) begin
+	always @(posedge clock or attribute_state_finished) begin
 		if(state_enable == 1) begin
 			if(has_finished == 0) begin
 				if(state_tag_found == 1) begin

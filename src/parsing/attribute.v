@@ -26,7 +26,7 @@ module attribute_parser(
 		int_state_finished
 	);
 
-	always @(posedge clock) begin
+	always @(posedge clock or int_state_finished) begin
 		if(state_enable == 1) begin
 			if(has_finished == 0) begin
 				if(state_equals == 1) begin
