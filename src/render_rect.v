@@ -27,11 +27,11 @@ module render_rect
 
         output done,                      // done signal, 0 means not done, 1 means done, stays at 1 until enable reset
 
-        output reg [2:0] color_stream     // output color stream
-        output reg [8:0] x_stream         // the stream output for x coords
-        output reg [7:0] y_stream         // the stream output for y coords
-        output reg writeEn                // write enable for the VGA
-	);
+        output [2:0] color_stream,     // output color stream
+        output [8:0] x_stream,         // the stream output for x coords
+        output [7:0] y_stream,         // the stream output for y coords
+        output writeEn                // write enable for the VGA
+);
 
     // Init datapath
 	datapath dp(clk, enable, origin_x, origin_y, width, height, back_color, border, border_color, done, color_stream, x_stream, y_stream, writeEn);
@@ -54,9 +54,9 @@ module datapath(
 
     output reg [2:0] color_stream,
     output reg [8:0] x_stream,
-    output reg [7:0] y_stream
-    output reg writeEn
-    );
+    output reg [7:0] y_stream,
+    output writeEn
+);
 
     wire [16:0] offset;
 
@@ -73,7 +73,13 @@ module datapath(
     end
 
     // counter should not be fed in enable
-    counter c0(clk, start_signal, width * height, writeEn, offset);
+    wire [16:0] limit = width * height;
+    // input clk,              // clock
+    // input start_count,      // signal to start counting
+    // input [16:0] limit,         // the number to count upto
+    // output reg counting,    // whether the clock is still counting
+    // output reg [16:0] result // resulting output
+    counter c0(clk, start_signal, limit, writeEn, offset);
 
     // load the output registers
     always@(*) begin
@@ -81,7 +87,6 @@ module datapath(
             x_stream = origin_x;
             y_stream = origin_y;
             color_stream = border ? border_color : back_color;
-            writeEn = 0;
             done = 0;
         end else begin
             // enable is on, start drawing the square
