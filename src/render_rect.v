@@ -80,9 +80,8 @@ module datapath(
                 y_stream = origin_y + (offset / width);
                 color_stream = back_color;
             end
-
+            // setting screen boundary limits
             x_stream = (x_stream >= 9'd320) ? 9'd319 : x_stream;
-            y_stream = (y_stream >= 9'd240) ? 9'd239 : y_stream;
             // writeEn is handled by counter
             done = ~writeEn;
         end
