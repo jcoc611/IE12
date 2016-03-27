@@ -46,6 +46,7 @@ module attribute_parser(
 						// Ignore everything until =
 						if(char == "=") begin
 							state_equals <= 1;
+							int_state_enable <= 1;
 						end
 					end else begin
 						// Determine type
