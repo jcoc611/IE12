@@ -1,4 +1,14 @@
-
+/**
+ * Parses an XML attribute.
+ * @param {ASCII} char A character stream.
+ * @param {boolean} state_enable Enable/~Reset
+ * @param {boolean} clock The global clock.
+ *
+ * @output {boolean} has_finished Whether this circuit is done.
+ * @output {AttributeType (int)} out_type The type of attribute. (Ex, width). See constants.v.
+ * @output {AttributeVal} out_value The value of the attribute. Type depends
+ *                 on the attribute type.
+ */
 module attribute_parser(
 	input [`CHAR_BITES] char,
 	input state_enable,
