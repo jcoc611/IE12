@@ -21,11 +21,13 @@ module counter(
 
 	always@(posedge clk) begin
 		if (counting) begin
-			if (result == limit) begin
+			if (result + 1'b1 == limit) begin
 				counting <= 1'b0;
 				result <= 17'b0;
-			end else if (start_count) begin
-				// result = 0
+			end else if (start_count && result == 17'b0) begin
+				// start_counting signal and result is 0
+				// do not change, let result stay at 0 for one
+				// clock cycle
 			end else begin
 				result <= result + 1'b1;
 			end
