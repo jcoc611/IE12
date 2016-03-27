@@ -90,14 +90,13 @@ module datapath(
             done = 0;
         end else begin
             // enable is on, start drawing the square
+            x_stream = origin_x + (offset % width);
+            y_stream = origin_y + (offset / width);
+
             if (border) begin
                 // border offsets only occur when
-                x_stream = origin_x + ((((offset % width) == 9'b0) || ((offset % width) == width - 1) || ((offset / width) == 8'b0) || ((offset / width) == height - 1)) ? offset % width : 9'b0);
-                y_stream = origin_y + ((((offset % width) == 9'b0) || ((offset % width) == width - 1) || ((offset / width) == 8'b0) || ((offset / width) == height - 1)) ? offset / width : 8'b0);
                 color_stream = ((((offset % width) == 9'b0) || ((offset % width) == width - 1) || ((offset / width) == 8'b0) || ((offset / width) == height - 1)) ? border_color : back_color);
             end else begin
-                x_stream = origin_x + (offset % width);
-                y_stream = origin_y + (offset / width);
                 color_stream = back_color;
             end
             // setting screen boundary limits
