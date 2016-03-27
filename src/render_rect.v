@@ -59,6 +59,7 @@ module datapath(
     );
 
     wire [16:0] offset;
+    reg start_signal = 0;
     counter c0(clk, enable, width * height, writeEn, offset);
     // load the output registers
     always@(*) begin
@@ -68,8 +69,13 @@ module datapath(
             color_stream = border ? border_color : back_color;
             writeEn = 0;
             done = 0;
+            start_signal = 0;
         end else begin
             // enable is on, start drawing the square
+            start_signal = 1;
+            if (start_signal == 1) begin
+                start_signal = 0;
+            end
             if (border) begin
                 // border offsets only occur when
                 x_stream = origin_x + ((((offset % width) == 9'b0) || ((offset % width) == width - 1) || ((offset / width) == 8'b0) || ((offset / width) == height - 1)) ? offset % width : 9'b0);

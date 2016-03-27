@@ -21,19 +21,7 @@ run 620 ns
 force {start_count} 0
 run 100 ns
 
-
-# start_count is always 1 throughout
-force {start_count} 1
-run 620 ns
-
-
-# buffer
-force {start_count} 0
-run 100 ns
-
 # test condition - start_count is 1 for many intervals over cycle
 force {start_count} 1 0, 0 20 -r 40
 run 620 ns
-
-
 
