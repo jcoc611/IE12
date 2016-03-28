@@ -6,6 +6,7 @@ module dummy_reader(
 	input state_enable,
 	input clock,
 	input [7:0] argument,
+	input pause,
 
 	output reg has_finished,
 	output reg [`CHAR_BITES] char
@@ -71,7 +72,7 @@ module dummy_reader(
 
 	always @(posedge clock) begin
 		if(state_enable == 1) begin
-			if(has_finished == 0) begin
+			if(has_finished == 0 && pause == 0) begin
 				if(char_index == 53) begin
 					has_finished <= 1;
 				end else begin
