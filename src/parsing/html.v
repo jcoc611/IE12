@@ -6,8 +6,11 @@ module html_parser(
 	output [`X_BITES] out_x,
 	output [`Y_BITES] out_y,
 	output [`COLOR_BITES] out_color,
+	output reg out_pause,
 	output reg plot
 );
+
+	initial out_pause = 0;
 
 	/** Text State */
 	// inputs
@@ -16,6 +19,7 @@ module html_parser(
 	reg [`ATTRIBUTE_VAL_BITES] text_size = 1;
 	reg [`X_BITES] text_x = 0;
 	reg [`Y_BITES] text_y = 0;
+	reg [`X_BITES] text_padding = 0;
 
 	// outputs
 	wire [`X_BITES] text_out_x;
@@ -30,6 +34,7 @@ module html_parser(
 	reg [`Y_BITES] tate_rect_y = 0;
 	reg [`X_BITES] rect_width = 0;
 	reg [`Y_BITES] rect_height = 0;
+	reg [`X_BITES] rect_margin = 0;
 	reg rect_has_border = 0;
 	reg [`COLOR_BITES] rect_border_color;
 	reg [`COLOR_BITES] rect_background_color = 0;
@@ -132,21 +137,94 @@ module html_parser(
 	always (posedge clock or text_out_finished
 		                  or rect_out_finished
 		                  or element_out_finished) begin
-		if (enable == 1) begin
-			if (element_enable == 1) begin
+		if (enable) begin
+			if (element_enable) begin
 				// Reading attribute k/v pairs
-			end else begin
-				if(char == "<") begin
-					text_enable <= 0;
-					element_enable <= 1;
-				end else begin
-					// Reading text
-					if(text_enable == 0) begin
-						text_enable <= 1;	
-					end else if(text_out_finished == 1) begin
-						text_enable <= 0;
+				if (element_out_finished) begin
+					element_enable <= 0;
+					// If element is block
+					// then pause, draw rect
+					// else continue reading
+					if (element_out_tag == `TAG_DIV && !element_out_is_closing) begin
+						out_pause <= 1;
+						rect_enable <= 1;
+					end else begin
+						// Reset
+						if(element_out_is_closing) begin
+							if(element_out_tag == `TAG_P) begin
+								text_x <= 0;
+								text_y <= text_y + (text_size * `FONT_HEIGHT);
+								rect_x <= rect_margin;
+								rect_y <= text_y + rect_margin;
+
+								text_color <= 0;
+								text_size <= 1;
+								text_padding <= 0;
+							end else if (element_out_tag == `TAG_DIV) begin
+								text_x <= text_padding;
+								text_y <= text_y + rect_margin;
+								rect_x <= 0;
+								rect_y <= rect_y + rect_heigth;
+
+								rect_width <= 0;
+								rect_heigth <= 0;
+								rect_margin <= 0;
+								rect_background_color <= 0;
+								rect_has_border <= 0;
+								rect_border_color <= 0;
+							end
+						end
 					end
-					
+				end else begin
+					if (element_out_has_attribute) begin
+						// Read attribute
+						case (element_out_attribute_type)
+							`ATT_COLOR: text_color <= element_out_attribute_value[`COLOR_BITES];
+							`ATT_SIZE: text_size <= element_out_attribute_value;
+							`ATT_WIDTH: rect_width <= element_out_attribute_value[`X_BITES];
+							`ATT_HEIGHT: rect_height <= element_out_attribute_value[`Y_BITES];
+							// `ATT_SRC: 
+							// `ATT_HREF: 
+							`ATT_BG: rect_background_color <= element_out_attribute_value[`COLOR_BITES];
+							`ATT_PADDING: begin
+								text_padding <= element_out_attribute_value[`X_BITES];
+								text_x <= text_x + text_padding;
+								text_y <= text_y + text_padding[`Y_BITES];
+							end
+							`ATT_MARGIN: begin
+								rect_margin <= element_out_attribute_value[`X_BITES];
+								rect_x <= rect_x + rect_margin;
+								rect_y <= rect_y + rect_margin[`Y_BITES];
+							end
+							`ATT_BORDER: begin
+								rect_has_border <= 1;
+								rect_border_color <= element_out_attribute_value[`COLOR_BITES];
+							end
+							// `ATT_POSITION:
+						endcase
+					end
+				end
+			end else begin
+				if (out_pause) begin
+					if(text_enable && text_out_finished) begin
+						text_enable <= 0;
+						out_pause <= 0;
+						text_x <= text_x + `FONT_WIDTH + `FONT_KERNING;
+					end else if (rect_enable && rect_out_finished) begin
+						rect_enable <= 0;
+						out_pause <= 0;
+					end
+				end else begin
+					if(char == "<") begin
+						text_enable <= 0;
+						element_enable <= 1;
+					end else begin
+						// Reading text
+						if(text_enable == 0) begin
+							text_enable <= 1;
+							out_pause <= 1;
+						end
+					end
 				end
 			end
 		end else begin

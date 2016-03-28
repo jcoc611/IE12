@@ -81,15 +81,15 @@ module element_parser(
 							is_closing_tag <= 1;
 						end
 						// div
-						"d": element_tag <= 0;
+						"d": element_tag <= `TAG_DIV;
 						// p(aragraph)
-						"p": element_tag <= 1;
+						"p": element_tag <= `TAG_P;
 						// body
-						"b": element_tag <= 2;
+						"b": element_tag <= `TAG_BODY;
 						// a (link)
-						"a": element_tag <= 3;
+						"a": element_tag <= `TAG_A;
 						// i(mage)
-						"i": element_tag <= 4;
+						"i": element_tag <= `TAG_IMG;
 						default: state_tag_found <= 0;
 					endcase
 				end

@@ -8,6 +8,7 @@
  */
 `define FONT_WIDTH 8
 `define FONT_HEIGHT 16
+`define FONT_KERNING 1
 
 /**
  * The number of bites required to represent
@@ -53,3 +54,12 @@
 `define ATT_MARGIN 8
 `define ATT_BORDER 9
 `define ATT_POSITION 10
+
+/**
+ * Constants for tag names. For example, div.
+ */
+`define TAG_DIV 0
+`define TAG_P 1
+`define TAG_BODY 2
+`define TAG_A 3
+`define TAG_IMG 4

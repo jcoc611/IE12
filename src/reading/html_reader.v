@@ -7,6 +7,7 @@
 module html_reader(
   input state_enable,                       // enable / ~reset
   input clock,                              // clock
+  input pause,
 
   output reg has_finished,                  // has it finished?
   output reg [`CHAR_BITES] char             // output char stream
@@ -20,12 +21,13 @@ module html_reader(
 
   always@(clock) begin
     if (state_enable) begin
-      if (has_finished == 0) begin
+      if (has_finished == 0 && pause == 0) begin
         if ($feof(file)) begin
           has_finished <= 1;
+        end else begin
+          // read chars and check for eof
+          c <= $fgetc(file);
         end
-        // read chars and check for eof
-        c <= $fgetc(file);
       end
     end else begin
       // reset
