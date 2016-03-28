@@ -15,7 +15,7 @@ module html_reader(
   integer file, c;           // file to read, character
 
   initial begin
-    file = $fopen("./index.html", "r");
+    file = $fopen("./html/index.html", "r");
   end
 
   always@(clock) begin
@@ -38,7 +38,7 @@ module html_reader(
     char = c[`CHAR_BITES];
   end
 
-  // initial begin
-  //   $fclose(file);  
-  // end
+  initial begin
+    $fclose(file);  
+  end
 endmodule
