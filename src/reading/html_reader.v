@@ -12,27 +12,33 @@ module html_reader(
   output reg [`CHAR_BITES] char             // output char stream
 );
 
-integer file, c;           // file to read, character
+  integer file, c;           // file to read, character
 
-file = $fopenr("index.html");
-
-always@(clock) begin
-  if (state_enable) begin
-    if (has_finished == 0) begin
-      if (c == `EOF) begin
-        has_finished <= 1;
-      end
-      // read chars and check for eof
-      c <= $fgetc(file);
-    end
-  end else begin
-    // reset
-    char <= 0;
-    has_finished = 0;
+  initial begin
+    file = $fopen("./index.html", "r");
   end
-end
 
-always@(c) begin
-  char = c[`CHAR_BITES];
-end
+  always@(clock) begin
+    if (state_enable) begin
+      if (has_finished == 0) begin
+        if ($feof(file)) begin
+          has_finished <= 1;
+        end
+        // read chars and check for eof
+        c <= $fgetc(file);
+      end
+    end else begin
+      // reset
+      char <= 0;
+      has_finished = 0;
+    end
+  end
+
+  always@(c) begin
+    char = c[`CHAR_BITES];
+  end
+
+  // initial begin
+  //   $fclose(file);  
+  // end
 endmodule
