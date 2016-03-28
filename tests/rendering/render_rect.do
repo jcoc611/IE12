@@ -7,21 +7,21 @@ log {/*}
 add wave {/*}
 
 # testing render_rect
-# lets try and draw a 8 * 4 rect with background white
-# and border red
+# lets try and draw a 9 * 3 rect with background black
+# and border cyan
 
 # get clock running
-force {clk} 0 0, 1 10 -r 20
+force {clk} 0 0, 1 1 -r 2
 
 # set the dimensions and other variables
-force {origin_x} 9'b0
-force {origin_y} 8'b0
-force {width} 9'd4
-force {height} 8'd8
-force {back_color} 3'd7
+force {origin_x} 9'b1
+force {origin_y} 8'b1
+force {width} 9'd9
+force {height} 8'd3
+force {back_color} 3'd0
 force {border} 1
-force {border_color} 3'd4
+force {border_color} 3'd3
 
 # set enable, to draw the rect a little into the time
-force {enable} 1 50, 0 800
-run 900 ps
+force {enable} 1 10, 0 80
+run 100 ps

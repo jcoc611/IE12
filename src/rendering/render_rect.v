@@ -1,8 +1,11 @@
 `timescale 1 ps / 1 ps
 /*
- *Module to draw rectangles of any dimension on any location
+ * Module to draw rectangles of any dimension on any location
  * in the 320x240 screen. Rectangles can have borders and
  * different background colors.
+ *
+ * TODO: do we have to wait one clock cycle, after giving an (X, Y) output
+ * pixel value?
  */
 
 module render_rect
@@ -49,7 +52,6 @@ module datapath(
     input [`COLOR_BITES] border_color,
 
     output reg done,
-
     output reg [`COLOR_BITES] color_stream,
     output reg [`X_BITES] x_stream,
     output reg [`Y_BITES] y_stream,
@@ -72,19 +74,21 @@ module datapath(
 
     // counter should not be fed in enable
     wire [`X_Y_PRODUCT_BITES] limit = width * height;
-    // input clk,              // clock
-    // input start_count,      // signal to start counting
-    // input [`X_Y_PRODUCT_BITES] limit,         // the number to count upto
-    // output reg counting,    // whether the clock is still counting
-    // output reg [`X_Y_PRODUCT_BITES] result // resulting output
+    /* clk              clock
+     * start_count      (pulse) signal to start counting
+     * limits           the number to count up to
+     *
+     * counting         whether the clock currently counting
+     * result           resulting output
+     */
     counter c0(clk, start_signal, limit, writeEn, offset);
 
     // load the output registers
     always@(*) begin
         if (!enable) begin
-            x_stream = origin_x;
-            y_stream = origin_y;
-            color_stream = border ? border_color : back_color;
+            x_stream = 0;
+            y_stream = 0;
+            color_stream = 0;
             done = 0;
         end else begin
             // enable is on, start drawing the square

@@ -1,5 +1,5 @@
 `timescale 1 ps / 1 ps
-/**
+/*
  * Outputs hard-coded HTML as a char stream.
  * For testing purposes only.
  */
@@ -80,7 +80,7 @@ module dummy_reader(
 				end else begin
 					char <= foo[char_index];
 					char_index <= char_index + 1;
-				end			
+				end
 			end
 		end else begin
 			char <= 0;
