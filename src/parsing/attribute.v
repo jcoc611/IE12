@@ -38,7 +38,7 @@ module attribute_parser(
 		int_state_finished
 	);
 
-	always @(posedge clock or int_state_finished) begin
+	always @(posedge clock or int_state_finished ) begin
 		if (state_enable == 1) begin
 			if (has_finished == 0) begin
 				if (state_equals == 1) begin
@@ -49,6 +49,9 @@ module attribute_parser(
 					end else begin
 						if (int_state_finished == 1) begin
 							out_value <= int_value;
+							state_last_char <= 0;
+							state_type_found <= 0;
+							state_equals <= 0;
 							has_finished <= 1;
 						end
 					end
@@ -103,6 +106,7 @@ module attribute_parser(
 			out_value <= 0;
 			state_type_found <= 0;
 			state_equals <= 0;
+			int_state_enable <= 0;
 		end
 	end
 endmodule
