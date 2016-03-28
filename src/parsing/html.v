@@ -137,10 +137,16 @@ module html_parser(
 				// Reading attribute k/v pairs
 			end else begin
 				if(char == "<") begin
+					text_enable <= 0;
 					element_enable <= 1;
 				end else begin
 					// Reading text
-					text_enable <= 1;
+					if(text_enable == 0) begin
+						text_enable <= 1;	
+					end else if(text_out_finished == 1) begin
+						text_enable <= 0;
+					end
+					
 				end
 			end
 		end else begin
