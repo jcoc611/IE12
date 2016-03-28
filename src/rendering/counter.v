@@ -1,6 +1,5 @@
-`timescale 1 ns / 1 ns
-
-// counter counting from 0 to limit starting when start_count is 1
+`timescale 1 ps / 1 ps
+// counter counting from 0 to limit starting when start_count is pulsed to 1
 
 module counter(
 	input clk,              					// clock

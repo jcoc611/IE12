@@ -1,5 +1,6 @@
 vlib work
-vlog src/render_rect/render_rect.v
+vlog src/rendering/render_rect.v src/constants.v src/rendering/counter.v
+
 vsim render_rect
 
 log {/*}
@@ -23,4 +24,4 @@ force {border_color} 3'd4
 
 # set enable, to draw the rect a little into the time
 force {enable} 1 50, 0 800
-run 900 ns
+run 900 ps

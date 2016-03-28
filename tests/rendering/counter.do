@@ -1,5 +1,5 @@
 vlib work
-vlog src/rendering/counter.v
+vlog src/rendering/counter.v src/constants.v
 vsim counter
 
 log {/*}
@@ -15,13 +15,13 @@ force {limit} 17'd30
 
 # test condition - start_count is 1 for one clock cycle and 0 for rest
 force {start_count} 1 0, 0 20
-run 620 ns
+run 620 ps
 
 # buffer
 force {start_count} 0
-run 100 ns
+run 100 ps
 
 # test condition - start_count is 1 for many intervals over cycle
 force {start_count} 1 0, 0 20 -r 40
-run 620 ns
+run 620 ps
 
