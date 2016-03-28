@@ -1,5 +1,5 @@
 vlib work
-vlog src/rendering/render_rect.v src/constants.v src/rendering/counter.v
+vlog src/constants.v src/rendering/counter.v src/rendering/render_rect.v 
 
 vsim render_rect
 
