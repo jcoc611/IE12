@@ -69,8 +69,10 @@ module character_renderer(
 							square_origin_x <= size * (state_pixel_index % `FONT_WIDTH);
 							square_origin_y <= size * (state_pixel_index / `FONT_WIDTH);
 							state_init_square <= 1;
+							is_drawing <= 1;
 						end else begin
 							state_pixel_index <= state_pixel_index + 1;
+							is_drawing <= 0;
 						end
 	 				end	
 				end
