@@ -6,7 +6,7 @@ module square_renderer(
 	input                    clock,
 	input      [`X_BITES] origin_x,
 	input      [`Y_BITES] origin_y,
-	input [`SQUARE_BITES]     size,
+	input [`ATTRIBUTE_VAL_BITES]     size,
 	input            state_enabled,
 
 	output     [`X_BITES] out_x,

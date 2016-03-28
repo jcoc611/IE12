@@ -6,11 +6,11 @@
 module html_parser(
 	input clock,
 	input [`CHAR_BITES] char,
-	input enable, 					// enable / ~reset
+	input state_enable, 					// enable / ~reset
 
-	output [`X_BITES] out_x,
-	output [`Y_BITES] out_y,
-	output [`COLOR_BITES] out_color,
+	output reg [`X_BITES] out_x,
+	output reg [`Y_BITES] out_y,
+	output reg [`COLOR_BITES] out_color,
 	output reg out_pause,
 	output reg plot
 );
@@ -35,8 +35,8 @@ module html_parser(
 	/** rect State */
 	// inputs
 	reg rect_enable = 0;
-	reg [`X_BITES] tate_rect_x = 0;
-	reg [`Y_BITES] tate_rect_y = 0;
+	reg [`X_BITES] rect_x = 0;
+	reg [`Y_BITES] rect_y = 0;
 	reg [`X_BITES] rect_width = 0;
 	reg [`Y_BITES] rect_height = 0;
 	reg [`X_BITES] rect_margin = 0;
@@ -94,26 +94,26 @@ module html_parser(
 	render_rect rr(
 		clock,
 
-        // all these signals are high active
-        rect_enable,
+		// all these signals are high active
+		rect_enable,
 
-        // rect attributes
-        rect_x,             //  the origin x of rect
-        rect_y,             //  the origin y of rect
+		// rect attributes
+		rect_x,             //  the origin x of rect
+		rect_y,             //  the origin y of rect
 
-        rect_width,                //  the width (x) of rect
-        rect_height,               //  the height (y) of rect
+		rect_width,                //  the width (x) of rect
+		rect_height,               //  the height (y) of rect
 
-        rect_background_color,           //  background color
-        rect_has_border,                     //  high active border signal
-        rect_border_color,         //  border color
+		rect_background_color,           //  background color
+		rect_has_border,                     //  high active border signal
+		rect_border_color,         //  border color
 
-        rect_out_finished,                      // done signal, 0 means not done, 1 means done, stays at 1 until enable reset
+		rect_out_finished,                      // done signal, 0 means not done, 1 means done, stays at 1 until enable reset
 
-        rect_out_color,     // output color stream
-        rect_out_x,         // the stream output for x coords
-        rect_out_y,         // the stream output for y coords
-        rect_out_plot       // write enable for the VGA
+		rect_out_color,     // output color stream
+		rect_out_x,         // the stream output for x coords
+		rect_out_y,         // the stream output for y coords
+		rect_out_plot       // write enable for the VGA
 	);
 
 	/** 
@@ -122,27 +122,27 @@ module html_parser(
 	 */
 	always @(*) begin
 		if(rect_enable == 1) begin
-			out_x <= rect_out_x;
-			out_y <= rect_out_y;
-			plot <= rect_out_plot;
-			out_color <= rect_out_color;
+			out_x = rect_out_x;
+			out_y = rect_out_y;
+			plot = rect_out_plot;
+			out_color = rect_out_color;
 		end else if(text_enable == 1) begin
-			out_x <= text_out_x;
-			out_y <= text_out_y;
-			plot <= text_out_plot;
-			out_color <= text_color;
+			out_x = text_out_x;
+			out_y = text_out_y;
+			plot = text_out_plot;
+			out_color = text_color;
 		end else begin
-			out_x <= 0;
-			out_y <= 0;
-			plot <= 0;
-			out_color <= 0;
+			out_x = 0;
+			out_y = 0;
+			plot = 0;
+			out_color = 0;
 		end
 	end
 
-	always (posedge clock or text_out_finished
+	always @(posedge clock or text_out_finished
 		                  or rect_out_finished
 		                  or element_out_finished) begin
-		if (enable) begin
+		if (state_enable) begin
 			if (element_enable) begin
 				// Reading attribute k/v pairs
 				if (element_out_finished) begin
@@ -169,10 +169,10 @@ module html_parser(
 								text_x <= text_padding;
 								text_y <= text_y + rect_margin;
 								rect_x <= 0;
-								rect_y <= rect_y + rect_heigth;
+								rect_y <= rect_y + rect_height;
 
 								rect_width <= 0;
-								rect_heigth <= 0;
+								rect_height <= 0;
 								rect_margin <= 0;
 								rect_background_color <= 0;
 								rect_has_border <= 0;
