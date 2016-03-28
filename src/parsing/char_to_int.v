@@ -1,3 +1,4 @@
+`timescale 1 ps / 1 ps
 /**
  * Converts an ASCII character into an integer.
  *

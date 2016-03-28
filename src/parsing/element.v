@@ -1,3 +1,4 @@
+`timescale 1 ps / 1 ps
 /**
  * Parses an XML element tag.
  *

@@ -1,9 +1,9 @@
 `timescale 1 ps / 1 ps
-
-/* Module to draw rectangles of any dimension on any location
+/*
+ *Module to draw rectangles of any dimension on any location
  * in the 320x240 screen. Rectangles can have borders and
  * different background colors.
-*/
+ */
 
 module render_rect
 	(

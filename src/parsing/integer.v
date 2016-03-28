@@ -1,3 +1,4 @@
+`timescale 1 ps / 1 ps
 /*
  * Parses integers provided through HTML attributes.
  *

@@ -1,3 +1,8 @@
+`timescale 1 ps / 1 ps
+
+/*
+ * Module for parsing HTML
+ */
 module html_parser(
 	input clock,
 	input [`CHAR_BITES] char,

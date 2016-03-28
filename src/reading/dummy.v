@@ -1,7 +1,9 @@
+`timescale 1 ps / 1 ps
 /**
  * Outputs hard-coded HTML as a char stream.
  * For testing purposes only.
  */
+
 module dummy_reader(
 	input state_enable,
 	input clock,

@@ -1,4 +1,8 @@
-// Part 2 skeleton
+`timescale 1 ps / 1 ps
+
+/*
+ * the top level module connecting to the VGA
+ */
 
 module main
 	(

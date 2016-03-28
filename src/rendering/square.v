@@ -1,3 +1,4 @@
+`timescale 1 ps / 1 ps
 /**
  * Renders a square of a given size.
  */
