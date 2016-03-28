@@ -13,69 +13,57 @@ module dummy_reader(
 	output reg has_finished,
 	output reg [`CHAR_BITES] char
 );
-	// <body background=3><p color=1 size=2>test</p></body>
-	wire [`CHAR_BITES] foo [0:52];
+	// <body><p color=1 size=2 >test</p></body>
+	wire [`CHAR_BITES] foo [0:40];
 
 	assign foo[0]  = "<";
 	assign foo[1]  = "b";
 	assign foo[2]  = "o";
 	assign foo[3]  = "d";
 	assign foo[4]  = "y";
-	assign foo[5]  = " ";
-	assign foo[6]  = "b";
-	assign foo[7]  = "a";
-	assign foo[8]  = "c";
-	assign foo[9]  = "k";
-	assign foo[10]  = "g";
-	assign foo[11]  = "r";
+	assign foo[5]  = ">";
+	assign foo[6]  = "<";
+	assign foo[7]  = "p";
+	assign foo[8]  = " ";
+	assign foo[9]  = "c";
+	assign foo[10]  = "o";
+	assign foo[11]  = "l";
 	assign foo[12]  = "o";
-	assign foo[13]  = "u";
-	assign foo[14]  = "n";
-	assign foo[15]  = "d";
-	assign foo[16]  = "=";
-	assign foo[17]  = "3";
-	assign foo[18]  = ">";
-	assign foo[19]  = "<";
-	assign foo[20]  = "p";
-	assign foo[21]  = " ";
-	assign foo[22]  = "c";
-	assign foo[23]  = "o";
-	assign foo[24]  = "l";
-	assign foo[25]  = "o";
-	assign foo[26]  = "r";
-	assign foo[27]  = "=";
-	assign foo[28]  = "1";
-	assign foo[29]  = " ";
-	assign foo[30]  = "s";
-	assign foo[31]  = "i";
-	assign foo[32]  = "z";
-	assign foo[33]  = "e";
-	assign foo[34]  = "=";
-	assign foo[35]  = "2";
-	assign foo[36]  = ">";
-	assign foo[37]  = "t";
-	assign foo[38]  = "e";
-	assign foo[39]  = "s";
-	assign foo[40]  = "t";
-	assign foo[41]  = "<";
-	assign foo[42]  = "/";
-	assign foo[43]  = "p";
-	assign foo[44]  = ">";
-	assign foo[45]  = "<";
-	assign foo[46]  = "/";
-	assign foo[47]  = "b";
-	assign foo[48]  = "o";
-	assign foo[49]  = "d";
-	assign foo[50]  = "y";
-	assign foo[51]  = ">";
-	assign foo[52]  = "\0";
+	assign foo[13]  = "r";
+	assign foo[14]  = "=";
+	assign foo[15]  = "1";
+	assign foo[16]  = " ";
+	assign foo[17]  = "s";
+	assign foo[18]  = "i";
+	assign foo[19]  = "z";
+	assign foo[20]  = "e";
+	assign foo[21]  = "=";
+	assign foo[22]  = "2";
+	assign foo[23]  = " ";
+	assign foo[24]  = ">";
+	assign foo[25]  = "t";
+	assign foo[26]  = "e";
+	assign foo[27]  = "s";
+	assign foo[28]  = "t";
+	assign foo[29]  = "<";
+	assign foo[30]  = "/";
+	assign foo[31]  = "p";
+	assign foo[32]  = ">";
+	assign foo[33]  = "<";
+	assign foo[34]  = "/";
+	assign foo[35]  = "b";
+	assign foo[36]  = "o";
+	assign foo[37]  = "d";
+	assign foo[38]  = "y";
+	assign foo[39]  = ">";
+	assign foo[40]  = "\0";
 
 	reg [5:0] char_index = 0;
 
 	always @(posedge clock) begin
 		if(state_enable == 1) begin
 			if(has_finished == 0 && pause == 0) begin
-				if(char_index == 53) begin
+				if(char_index == 40) begin
 					has_finished <= 1;
 				end else begin
 					char <= foo[char_index];
