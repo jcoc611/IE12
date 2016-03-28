@@ -3,13 +3,14 @@
 /**
  * Transforms an ASCII character into a 8x16 bitmap
  * of monochrome pixels.
+ *
  * @param char The ASCII 7-bit character to be decoded
  * @output pixels The bitmap representing this character
  * as a 128-bit bus.
  */
 module char_decoder(
 	input   [`CHAR_BITES] char,
-	output reg [127:0] pixels
+	output reg [127:0] pixels 			// TODO: should this not be FONT_BITES
 );
 	localparam undefined =  128'b00000000000000000000000011111111110000111010010110100101100110011001100110100101110000111111111100000000000000000000000000000000;
 

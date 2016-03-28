@@ -9,20 +9,20 @@
  *    Thus, the element content is NOT parsed by this circuit.
  */
 module element_parser(
-	input [`CHAR_BITES] char,
-	input state_enable,
-	input clock,
+	input [`CHAR_BITES] char, 											// char stream
+	input state_enable,															// enable / ~reset
+	input clock,																		// global clock
 
-	output reg has_finished,
-	output reg [`ELE_TAG_BITES] element_tag,
-	output reg element_type, /** 0 - start (<div>), 1 - end (</did>) */
+	output reg has_finished,												// has finished flag
+	output reg [`ELE_TAG_BITES] element_tag,				// int representation of element tag
+	output reg is_closing_tag, // 0 means opening tag, 1 is closing tag </div>
 
 	output reg has_attribute, /** 1 when outputting attribute k/v */
-	output [`ATTRIBUTE_TYPE_BITES] attribute_type,
-	output [`ATTRIBUTE_VAL_BITES] attribute_value
+	output [`ATTRIBUTE_TYPE_BITES] attribute_type, 		// attribute type
+	output [`ATTRIBUTE_VAL_BITES] attribute_value 		// attribute value
 );
-	reg state_tag_found = 0;
-	reg state_tag_finished = 0;
+	reg state_tag_found = 0; 					// flag to know if tag type has been found
+	reg state_tag_finished = 0; 			// flag to know if we have finished parsing tag
 
 	/** Attribute parser state vars. */
 	reg attribute_state_enable = 0;
@@ -39,26 +39,26 @@ module element_parser(
 	);
 
 	always @(posedge clock or attribute_state_finished) begin
-		if(state_enable == 1) begin
-			if(has_finished == 0) begin
-				if(state_tag_found == 1) begin
-					if(state_tag_finished == 1) begin
+		if (state_enable == 1) begin
+			if (has_finished == 0) begin
+				if (state_tag_found == 1) begin
+					if (state_tag_finished == 1) begin
 						// Reading attributes until a >
-						if(attribute_state_enable == 1) begin
-							if(char == ">") begin
+						if (attribute_state_enable == 1) begin
+							if (char == ">") begin
 								// We have finished
 								attribute_state_enable <= 0;
 								has_finished <= 1;
-							end else if(attribute_state_finished == 1) begin
+							end else if (attribute_state_finished == 1) begin
 								// Done reading an attribute, output
 								has_attribute <= 1;
-								attribute_state_enable <= 0;
+								attribute_state_enable <= 0; 		// read the next attribute
 							end
 						end else begin
 							// Skip whitespace until next attribute
 							has_attribute <= 0;
-							if(char != " ")
-								if(char == ">") begin
+							if (char != " ")
+								if (char == ">") begin
 									// We have finished
 									has_finished <= 1;
 								end else
@@ -67,9 +67,9 @@ module element_parser(
 					end else begin
 						// Reading tag, but already know type
 						// So we will ignore everything until a space
-						if(char == " ") begin
+						if (char == " ") begin
 							state_tag_finished <= 1;
-							attribute_state_enable <= 1;
+							attribute_state_enable <= 1; 			// start reading attributes
 						end
 					end
 				end else begin
@@ -78,7 +78,7 @@ module element_parser(
 					case(char)
 						"/": begin
 							state_tag_found <= 0;
-							element_type <= 1;
+							is_closing_tag <= 1;
 						end
 						// div
 						"d": element_tag <= 0;
@@ -95,9 +95,10 @@ module element_parser(
 				end
 			end
 		end else begin
+			// reset
 			has_finished <= 0;
 			element_tag <= 0;
-			element_type <= 0;
+			is_closing_tag <= 0;
 			state_tag_found <= 0;
 			state_tag_finished <= 0;
 

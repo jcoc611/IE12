@@ -1,13 +1,14 @@
 /**
  * Parses an XML attribute.
- * @param {ASCII} char A character stream.
- * @param {boolean} state_enable Enable/~Reset
- * @param {boolean} clock The global clock.
  *
- * @output {boolean} has_finished Whether this circuit is done.
- * @output {AttributeType (int)} out_type The type of attribute. (Ex, width). See constants.v.
- * @output {AttributeVal} out_value The value of the attribute. Type depends
- *                 on the attribute type.
+ * @param {ASCII} char 												A character stream.
+ * @param {boolean} state_enable 							Enable/~Reset
+ * @param {boolean} clock 										The global clock.
+ *
+ * @output {boolean} has_finished 						Whether this circuit is done.
+ * @output {AttributeType (int)} out_type 		The type of attribute. (Ex, width). See constants.v
+ * @output {AttributeVal} out_value 					The value of the attribute. Type depends
+ *           																	on the attribute type.
  */
 module attribute_parser(
 	input [`CHAR_BITES] char,
@@ -19,9 +20,9 @@ module attribute_parser(
 	output reg [`ATTRIBUTE_VAL_BITES] out_value
 );
 	/** Character previously read. */
-	reg [`CHAR_BITES] state_last_char = 0;
-	reg state_type_found = 0;
-	reg state_equals = 0;
+	reg [`CHAR_BITES] state_last_char = 0; 			// last character
+	reg state_type_found = 0; 									// flag to know if the type of attribute has been recognized
+	reg state_equals = 0; 											// flag, if it has found "=" char
 
 	wire int_state_finished;
 	wire [`ATTRIBUTE_VAL_BITES] int_value;
@@ -37,24 +38,24 @@ module attribute_parser(
 	);
 
 	always @(posedge clock or int_state_finished) begin
-		if(state_enable == 1) begin
-			if(has_finished == 0) begin
-				if(state_equals == 1) begin
+		if (state_enable == 1) begin
+			if (has_finished == 0) begin
+				if (state_equals == 1) begin
 					// Reading value
 					// For now, only reads int
-					if(int_state_enable == 0) begin
+					if (int_state_enable == 0) begin
 						int_state_enable <= 1;
 					end else begin
-						if(int_state_finished == 1) begin
+						if (int_state_finished == 1) begin
 							out_value <= int_value;
 							has_finished <= 1;
 						end
 					end
 				end else begin
 					// Reading type
-					if(state_type_found == 1) begin
+					if (state_type_found == 1) begin
 						// Ignore everything until =
-						if(char == "=") begin
+						if (char == "=") begin
 							state_equals <= 1;
 							int_state_enable <= 1;
 						end
@@ -74,10 +75,10 @@ module attribute_parser(
 							"r": out_type <= (state_last_char == "s")? `ATT_SRC : `ATT_HREF;
 							// bg, padding, margin
 							"a": begin
-								if(state_last_char == "b") begin
+								if (state_last_char == "b") begin
 									// Background
 									out_type <= `ATT_BG;
-								end else if(state_last_char == "p") begin
+								end else if (state_last_char == "p") begin
 									// Padding
 									out_type <= `ATT_PADDING;
 								end else begin
@@ -94,6 +95,7 @@ module attribute_parser(
 				end
 			end
 		end else begin
+			// reset
 			state_last_char <= 0;
 			has_finished <= 0;
 			out_type <= 0;
