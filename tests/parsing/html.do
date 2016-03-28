@@ -105,7 +105,7 @@ run 2ps
 force {char} 00111110
 run 2ps
 force {char} 01110100
-run 2ps
+run 140ps
 force {char} 01100101
 run 2ps
 force {char} 01110011
