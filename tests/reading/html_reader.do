@@ -5,11 +5,11 @@ vsim html_reader
 log {/*}
 add wave {/*}
 
-# testing counter
+# testing html reader
 
-force {state_enable} 0
 force {clock} 0 0, 1 1 -r 2
-run 5 ps
 
+# test case 1, enable is always 1 not paused
 force {state_enable} 1
-run 380 ps
+force {pause} 0
+run 400 ps
