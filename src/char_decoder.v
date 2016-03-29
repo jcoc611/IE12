@@ -45,7 +45,6 @@ module char_decoder(
 			":":  pixels <= undefined;
 			";":  pixels <= undefined;
 			"<":  pixels <= undefined;
-			"<":  pixels <= undefined;
 			">":  pixels <= undefined;
 			"?":  pixels <= undefined;
 			"@":  pixels <= undefined;
@@ -76,7 +75,7 @@ module char_decoder(
 			"Y": pixels <= 128'b00000000000000000110011001100110011001100110011000111100000110000001100000011000000110000001100000000000000000000000000000000000;
 			"Z": pixels <= 128'b00000000000000001111111000001100000110000001100000110000001100000110000001100000110000001111111000000000000000000000000000000000;
 			"[": pixels <= undefined;
-	//		"\\": pixels <= undefined;
+			// "\\": pixels <= undefined;
 			"]": pixels <= undefined;
 			"^": pixels <= undefined;
 			"_": pixels <= undefined;
