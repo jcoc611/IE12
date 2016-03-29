@@ -65,6 +65,7 @@ module datapath(
     // when enable turns on, start signal is set to 1
     // on the next clk edge it is put back to 0
     reg is_started = 0;
+    reg is_started_2 = 0;
 
     always @(*) begin
         if(enable && is_started == 0) begin
