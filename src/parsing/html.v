@@ -179,8 +179,8 @@ module html_parser(
 					             out_pause <= 1;
 						     rect_x <= 0;
 						     rect_y <= 0;
-						     rect_width <= 320;
-						     rect_height <= 160;
+						     rect_width <= `SCREEN_WIDTH;
+						     rect_height <= `SCREEN_HEIGHT;
 						     rect_enable <= 1;
 					     end else if (element_out_tag == `TAG_DIV) begin
 						     out_pause <= 1;
