@@ -139,6 +139,24 @@ module html_parser(
 		end
 	end
 
+	/**
+	 * Pathways for pausing stream.
+	 * Easier to react faster.
+	 */
+	always @(*) begin
+		if(text_enable) begin
+			if(text_out_finished) 
+				out_pause = 0;
+			else
+				out_pause = 1;
+		end else if(rect_enable) begin
+			if(rect_out_finished)
+				out_pause = 0;
+			else
+				out_pause = 1;
+		end
+	end
+
 	// or posedge text_out_finished or posedge rect_out_finished or posedge element_out_finished
 	always @(posedge clock) begin
 		if (state_enable) begin
@@ -176,14 +194,12 @@ module html_parser(
 					     end
 					end else begin
 					     if(element_out_tag == `TAG_BODY) begin
-					             out_pause <= 1;
 						     rect_x <= 0;
 						     rect_y <= 0;
 						     rect_width <= `SCREEN_WIDTH;
 						     rect_height <= `SCREEN_HEIGHT;
 						     rect_enable <= 1;
 					     end else if (element_out_tag == `TAG_DIV) begin
-						     out_pause <= 1;
 						     rect_enable <= 1;
 					     end
 					end
@@ -220,11 +236,9 @@ module html_parser(
 				if (out_pause) begin
 					if(text_enable && text_out_finished) begin
 						text_enable <= 0;
-						out_pause <= 0;
 						text_x <= text_x + `FONT_WIDTH + `FONT_KERNING;
 					end else if (rect_enable && rect_out_finished) begin
 						rect_enable <= 0;
-						out_pause <= 0;
 					end
 				end else begin
 					if(char == "<") begin
@@ -234,7 +248,6 @@ module html_parser(
 						// Reading text
 						if(text_enable == 0) begin
 							text_enable <= 1;
-							out_pause <= 1;
 						end
 					end
 				end
