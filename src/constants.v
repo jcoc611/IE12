@@ -4,6 +4,13 @@
  */
 
 /**
+ * Screen settings.
+ */
+`define SCREEN_WIDTH 320
+`define SCREEN_HEIGHT 240
+
+
+/**
  * Some font settings.
  */
 `define FONT_WIDTH 8
