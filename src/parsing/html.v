@@ -164,38 +164,38 @@ module html_parser(
 					
 					// Reset
 					if(element_out_is_closing) begin
-					     if(element_out_tag == `TAG_P) begin
-						     text_x <= 0;
-						     text_y <= text_y + (text_size * `FONT_HEIGHT);
-						     rect_x <= rect_margin;
-						     rect_y <= text_y + rect_margin;
+						 if(element_out_tag == `TAG_P) begin
+							text_x <= 0;
+							text_y <= text_y + (text_size * `FONT_HEIGHT);
+							rect_x <= rect_margin;
+							rect_y <= text_y + rect_margin;
 
-						     text_color <= 0;
-						     text_size <= 1;
-						     text_padding <= 0;
-					     end else if (element_out_tag == `TAG_DIV) begin
-						     text_x <= text_padding;
-						     text_y <= text_y + rect_margin;
-						     rect_x <= 0;
-						     rect_y <= rect_y + rect_height;
+							text_color <= 0;
+							text_size <= 1;
+							text_padding <= 0;
+						 end else if (element_out_tag == `TAG_DIV) begin
+							text_x <= text_padding;
+							text_y <= text_y + rect_margin;
+							rect_x <= 0;
+							rect_y <= rect_y + rect_height;
 
-						     rect_width <= 0;
-						     rect_height <= 0;
-						     rect_margin <= 0;
-						     rect_background_color <= 0;
-						     rect_has_border <= 0;
-						     rect_border_color <= 0;
-					     end
+							rect_width <= 0;
+							rect_height <= 0;
+							rect_margin <= 0;
+							rect_background_color <= 0;
+							rect_has_border <= 0;
+							rect_border_color <= 0;
+						 end
 					end else begin
-					     if(element_out_tag == `TAG_BODY) begin
-						     rect_x <= 0;
-						     rect_y <= 0;
-						     rect_width <= `SCREEN_WIDTH;
-						     rect_height <= `SCREEN_HEIGHT;
-						     rect_enable <= 1;
-					     end else if (element_out_tag == `TAG_DIV) begin
-						     rect_enable <= 1;
-					     end
+						 if(element_out_tag == `TAG_BODY) begin
+							 rect_x <= 0;
+							 rect_y <= 0;
+							 rect_width <= `SCREEN_WIDTH;
+							 rect_height <= `SCREEN_HEIGHT;
+							 rect_enable <= 1;
+						 end else if (element_out_tag == `TAG_DIV) begin
+							 rect_enable <= 1;
+						 end
 					end
 				end else begin
 					if (element_out_has_attribute) begin
