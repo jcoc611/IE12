@@ -145,15 +145,9 @@ module html_parser(
 	 */
 	always @(*) begin
 		if(text_enable) begin
-			if(text_out_finished) 
-				out_pause = 0;
-			else
-				out_pause = 1;
-		end else if(rect_enable) begin
-			if(rect_out_finished)
-				out_pause = 0;
-			else
-				out_pause = 1;
+			out_pause = 1;
+		end else if(rect_enable) begin	
+			out_pause = 1;
 		end
 	end
 
