@@ -66,6 +66,7 @@ module element_parser(
 							if (char != " ")
 								if (char != ">") begin
 									attribute_state_enable <= 1;
+								end
 						end
 					end else begin
 						// Reading tag, but already know type
