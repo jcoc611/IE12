@@ -59,8 +59,13 @@ module dummy_reader(
 	assign foo[40]  = "\0";
 
 	reg [5:0] char_index = 0;
+	
+	initial char = 0;
+	initial has_finished = 0;
+	initial char_index = 0;
 
-	always @(posedge clock) begin
+	always @(posedge clock or posedge pause) begin
+		
 		if(state_enable == 1) begin
 			if(has_finished == 0 && pause == 0) begin
 				if(char_index == 40) begin
