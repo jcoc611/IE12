@@ -41,9 +41,9 @@ module element_parser(
 
 	always @(*) begin
 		has_attribute = attribute_state_enable && attribute_state_finished;
-		if(char == ">")
+		if(char == ">") begin
 			has_finished = 1;
-		else begin
+		end else begin
 			has_finished = 0;
 		end
 	end
