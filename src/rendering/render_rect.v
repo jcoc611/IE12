@@ -63,14 +63,17 @@ module datapath(
     reg start_signal = 0;
 
     // when enable turns on, start signal is set to 1
-    always @(posedge enable) begin
+    // on the next clk edge it is put back to 0
+    reg is_started = 0;
+    always @(posedge clk) begin
+        if (enable && start_signal == 0 && is_started == 0) begin
             start_signal <= 1;
+            is_started <= 1;
+        end else begin
+            start_signal <= 0;
+        end
     end
 
-    // on the next clk edge it is put back to 0
-    always@(posedge clk) begin
-        if (start_signal) start_signal <= 0;
-    end
 
     // counter should not be fed in enable
     wire [`X_Y_PRODUCT_BITES] limit = width * height;

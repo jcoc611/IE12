@@ -7,18 +7,20 @@
 module main
 	(
 		CLOCK_50,						//	On Board 50 MHz
+		KEY,
 		// The ports below are for the VGA output.  Do not change.
 		VGA_CLK,   						//	VGA Clock
 		VGA_HS,							//	VGA H_SYNC
 		VGA_VS,							//	VGA V_SYNC
-		VGA_BLANK_N,						//	VGA BLANK
-		VGA_SYNC_N,						//	VGA SYNC
+		VGA_BLANK,						//	VGA BLANK
+		VGA_SYNC,						//	VGA SYNC
 		VGA_R,   						//	VGA Red[9:0]
 		VGA_G,	 						//	VGA Green[9:0]
 		VGA_B   						//	VGA Blue[9:0]
 	);
 
 	input			CLOCK_50;				//	50 MHz
+	input 	[3:0] KEY;
 	// Do not change the following outputs
 	output			VGA_CLK;   				//	VGA Clock
 	output			VGA_HS;					//	VGA H_SYNC
@@ -65,12 +67,13 @@ module main
 
 		wire [`CHAR_BITES] char; 		// char stream wire
 		wire has_finished_connection;
+		wire has_not_finished_connection = ~has_finished_connection;
 		wire pause_connection;
 
-		module html_parser(
-			CLOCK_50
+		html_parser hp(
+			CLOCK_50,
 			char,
-			~has_finished_connection,
+			has_not_finished_connection,
 
 			x,
 			y,
@@ -79,9 +82,10 @@ module main
 			writeEn
 		);
 
-	module html_reader(
+	dummy_reader dr(
 	  1'b1, 										// enable / ~reset
 	  CLOCK_50,                 // clock
+	  1'b0,
 	  pause_connection,
 
 	  has_finished_connection,  // has it finished?

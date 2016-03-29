@@ -139,9 +139,8 @@ module html_parser(
 		end
 	end
 
-	always @(posedge clock or text_out_finished
-		                  or rect_out_finished
-		                  or element_out_finished) begin
+	// or posedge text_out_finished or posedge rect_out_finished or posedge element_out_finished
+	always @(posedge clock) begin
 		if (state_enable) begin
 			if (element_enable) begin
 				// Reading attribute k/v pairs

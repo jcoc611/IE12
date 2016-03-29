@@ -17,9 +17,6 @@ module counter(
 		if (start_count) begin
 			counting <= 1;
 		end
-	end
-
-	always@(posedge clk) begin
 		if (counting) begin
 			if (result + 1'b1 == limit) begin
 				counting <= 0;

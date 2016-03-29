@@ -7,13 +7,13 @@
  */
 module char_to_int(
 	input [`CHAR_BITES] char,
-	output reg [`ATTRIBUTE_VAL_BITES] int
+	output reg [`ATTRIBUTE_VAL_BITES] int_out
 );
 	always @(*) begin
 		if (char > 47 && char < 58) begin
-			int = char - 48;
+			int_out = char - 48;
 		end else begin
-			int = 0;
+			int_out = 0;
 		end
 	end
 endmodule
