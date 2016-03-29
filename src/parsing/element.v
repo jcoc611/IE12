@@ -41,6 +41,11 @@ module element_parser(
 
 	always @(*) begin
 		has_attribute = attribute_state_enable && attribute_state_finished;
+		if(char == ">")
+			has_finished = 1;
+		else begin
+			has_finished = 0;
+		end
 	end
 	
  // or attribute_state_finished
@@ -51,23 +56,15 @@ module element_parser(
 					if (state_tag_finished == 1) begin
 						// Reading attributes until a >
 						if (attribute_state_enable == 1) begin
-							if (char == ">") begin
+							if (char == ">" || attribute_state_finished == 1) begin
 								// We have finished
-								attribute_state_enable <= 0;
-								has_finished <= 1;
-							end else if (attribute_state_finished == 1) begin
-								// Done reading an attribute, output
-								// read the next attribute
 								attribute_state_enable <= 0;
 							end
 						end else begin
 							// Skip whitespace until next attribute
 							has_attribute <= 0;
 							if (char != " ")
-								if (char == ">") begin
-									// We have finished
-									has_finished <= 1;
-								end else
+								if (char != ">") begin
 									attribute_state_enable <= 1;
 						end
 					end else begin
@@ -102,7 +99,6 @@ module element_parser(
 			end
 		end else begin
 			// reset
-			has_finished <= 0;
 			element_tag <= 0;
 			is_closing_tag <= 0;
 			state_tag_found <= 0;
