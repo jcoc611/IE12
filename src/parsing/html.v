@@ -144,10 +144,12 @@ module html_parser(
 	 * Easier to react faster.
 	 */
 	always @(*) begin
-		if(text_enable) begin
+		if(text_enable == 1) begin
 			out_pause = 1;
-		end else if(rect_enable) begin	
+		end else if(rect_enable == 1) begin	
 			out_pause = 1;
+		end else begin
+			out_pause = 0;
 		end
 	end
 
@@ -227,24 +229,22 @@ module html_parser(
 					end
 				end
 			end else begin
-				if (out_pause) begin
+				// if (out_pause) begin
 					if(text_enable && text_out_finished) begin
 						text_enable <= 0;
 						text_x <= text_x + `FONT_WIDTH + `FONT_KERNING;
 					end else if (rect_enable && rect_out_finished) begin
 						rect_enable <= 0;
 					end
-				end else begin
+				// end else begin
 					if(char == "<") begin
 						text_enable <= 0;
 						element_enable <= 1;
 					end else begin
 						// Reading text
-						if(text_enable == 0) begin
-							text_enable <= 1;
-						end
+						text_enable <= 1;
 					end
-				end
+				// end
 			end
 		end else begin
 			// Done drawing
