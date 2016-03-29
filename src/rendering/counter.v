@@ -13,13 +13,17 @@ module counter(
 	initial counting = 0;
 	initial result = 17'b0;
 
-	always@(posedge clk) begin
-		if (start_count) begin
-			counting <= 1;
+	always @(*) begin
+		if(start_count) begin
+			counting = 1;
+		end else if(result + 1'b1 == limit) begin
+			counting = 0;
 		end
+	end
+
+	always @(posedge clk) begin
 		if (counting) begin
 			if (result + 1'b1 == limit) begin
-				counting <= 0;
 				result <= 17'b0;
 			end else if (start_count && result == 17'b0) begin
 				// start_counting signal and result is 0
