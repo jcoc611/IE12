@@ -38,7 +38,19 @@ module main
 	wire [`COLOR_BITES] colour;
 	wire [`X_BITES] x;
 	wire [`Y_BITES] y;
-	wire writeEn;
+	wire parser_plot;
+	
+	reg CLOCK_25;
+	reg writeEn = 0;
+	
+	always @(posedge CLOCK_50) begin
+		CLOCK_25 <= ~CLOCK_25;
+		if(CLOCK_25 == 1) begin
+			writeEn <= parser_plot;
+		end else begin
+			writeEn <= 0;
+		end
+	end
 
 	// Create an Instance of a VGA controller - there can be only one!
 	// Define the number of colours as well as the initial background
@@ -71,7 +83,7 @@ module main
 		wire pause_connection;
 
 		html_parser hp(
-			CLOCK_50,
+			CLOCK_25,
 			char,
 			has_not_finished_connection,
 
@@ -79,12 +91,12 @@ module main
 			y,
 			colour,
 			pause_connection, 		// pause signal to reader
-			writeEn
+			parser_plot
 		);
 
 	dummy_reader dr(
 	  1'b1, 										// enable / ~reset
-	  CLOCK_50,                 // clock
+	  CLOCK_25,                 // clock
 	  1'b0,
 	  pause_connection,
 
