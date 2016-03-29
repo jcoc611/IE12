@@ -38,6 +38,11 @@ module element_parser(
 		attribute_type,
 		attribute_value
 	);
+
+	always @(*) begin
+		has_attribute = attribute_state_enable && attribute_state_finished;
+	end
+	
  // or attribute_state_finished
 	always @(posedge clock) begin
 		if (state_enable == 1) begin
@@ -52,8 +57,8 @@ module element_parser(
 								has_finished <= 1;
 							end else if (attribute_state_finished == 1) begin
 								// Done reading an attribute, output
-								has_attribute <= 1;
-								attribute_state_enable <= 0; 		// read the next attribute
+								// read the next attribute
+								attribute_state_enable <= 0;
 							end
 						end else begin
 							// Skip whitespace until next attribute

@@ -9,7 +9,7 @@ vlog src/constants.v src/char_decoder.v src/vga_adapter/vga_controller.v src/vga
 vsim main
 
 # Log all signals and add some signals to waveform window.
-log {/*}
+log -r {/*}
 # add wave {/*} would add all items in top level simulation module.
 add wave {/*}
 
