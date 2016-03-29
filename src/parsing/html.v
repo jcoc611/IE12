@@ -41,7 +41,7 @@ module html_parser(
 	reg [`Y_BITES] rect_height = 0;
 	reg [`X_BITES] rect_margin = 0;
 	reg rect_has_border = 0;
-	reg [`COLOR_BITES] rect_border_color;
+	reg [`COLOR_BITES] rect_border_color = 0;
 	reg [`COLOR_BITES] rect_background_color = 0;
 
 	// outputs
