@@ -71,7 +71,7 @@ module main
 			parser_plot
 		);
 
-	dummy_reader dr(
+	dummy2_reader dr(
 	  1'b1, 										// enable / ~reset
 	  CLOCK_25,                 // clock
 	  1'b0,
