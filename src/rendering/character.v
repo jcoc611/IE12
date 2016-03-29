@@ -84,6 +84,8 @@ module character_renderer(
 			square_origin_y <= origin_y;
 			square_state_enabled <= 0;
 			state_pixel_index <= 0;
+			has_finished <= 0;
+			is_drawing <= 0;
 		end
 	end
 endmodule
