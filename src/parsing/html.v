@@ -230,14 +230,12 @@ module html_parser(
 				end
 			end else begin
 				// if (out_pause) begin
-					if(text_enable && text_out_finished) begin
+					if(text_enable == 1 && text_out_finished == 1) begin
 						text_enable <= 0;
 						text_x <= text_x + `FONT_WIDTH + `FONT_KERNING;
 					end else if (rect_enable && rect_out_finished) begin
 						rect_enable <= 0;
-					end
-				// end else begin
-					if(char == "<") begin
+					end else if(char == "<") begin
 						text_enable <= 0;
 						element_enable <= 1;
 					end else begin
