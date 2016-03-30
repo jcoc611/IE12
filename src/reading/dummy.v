@@ -65,9 +65,10 @@ module dummy_reader(
 	initial char_index = 0;
 
 	always @(posedge clock or posedge pause) begin
-		
-		if(state_enable == 1) begin
-			if(has_finished == 0 && pause == 0) begin
+		if(pause) begin
+			//do nothing
+		end else if(state_enable == 1) begin
+			if(has_finished == 0) begin
 				if(char_index == 40) begin
 					has_finished <= 1;
 				end else begin

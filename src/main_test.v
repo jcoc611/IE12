@@ -40,17 +40,7 @@ module main
 	wire [`Y_BITES] y;
 	wire parser_plot;
 	
-	reg CLOCK_25 = 0;
-	reg writeEn = 0;
 	
-	always @(posedge CLOCK_50) begin
-		CLOCK_25 <= ~CLOCK_25;
-		if(CLOCK_25 == 1) begin
-			writeEn <= parser_plot;
-		end else begin
-			writeEn <= 0;
-		end
-	end
 
 	
 
@@ -60,7 +50,7 @@ module main
 		wire pause_connection;
 
 		html_parser hp(
-			CLOCK_25,
+			CLOCK_50,
 			char,
 			has_not_finished_connection,
 
@@ -71,9 +61,9 @@ module main
 			parser_plot
 		);
 
-	dummy2_reader dr(
+	dummy_reader dr(
 	  1'b1, 										// enable / ~reset
-	  CLOCK_25,                 // clock
+	  CLOCK_50,                 // clock
 	  1'b0,
 	  pause_connection,
 

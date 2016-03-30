@@ -1,6 +1,10 @@
 # Verilog
 work
 *.wlf
+*.bak
+*.vstf
+wlf*
+
 
 # Mac
 .DS_Store

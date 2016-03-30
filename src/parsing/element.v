@@ -40,7 +40,7 @@ module element_parser(
 	);
 
 	always @(*) begin
-		has_attribute = attribute_state_enable && attribute_state_finished;
+		has_attribute = (attribute_state_enable && attribute_state_finished);
 		if(char == ">") begin
 			has_finished = 1;
 		end else begin
@@ -62,7 +62,7 @@ module element_parser(
 							end
 						end else begin
 							// Skip whitespace until next attribute
-							has_attribute <= 0;
+							//has_attribute <= 0;
 							if (char != " ")
 								if (char != ">") begin
 									attribute_state_enable <= 1;
@@ -106,7 +106,7 @@ module element_parser(
 			state_tag_finished <= 0;
 
 			attribute_state_enable <= 0;
-			has_attribute <= 0;
+			//has_attribute <= 0;
 		end
 	end
 endmodule

@@ -20,7 +20,7 @@ module html_parser(
 	/** Text State */
 	// inputs
 	reg text_enable = 0;
-	reg [`COLOR_BITES] text_color = 0;
+	reg [`COLOR_BITES] text_color = 7;
 	reg [`ATTRIBUTE_VAL_BITES] text_size = 1;
 	reg [`X_BITES] text_x = 0;
 	reg [`Y_BITES] text_y = 0;
@@ -43,6 +43,21 @@ module html_parser(
 	reg rect_has_border = 0;
 	reg [`COLOR_BITES] rect_border_color = 0;
 	reg [`COLOR_BITES] rect_background_color = 0;
+	
+	/** temp states */
+	reg [`COLOR_BITES] temp_text_color = 7;
+	reg [`ATTRIBUTE_VAL_BITES] temp_text_size = 1;
+	reg [`X_BITES] temp_text_x = 0;
+	reg [`Y_BITES] temp_text_y = 0;
+	reg [`X_BITES] temp_text_padding = 0;
+	reg [`X_BITES] temp_rect_x = 0;
+	reg [`Y_BITES] temp_rect_y = 0;
+	reg [`X_BITES] temp_rect_width = 0;
+	reg [`Y_BITES] temp_rect_height = 0;
+	reg [`X_BITES] temp_rect_margin = 0;
+	reg temp_rect_has_border = 0;
+	reg [`COLOR_BITES] temp_rect_border_color = 0;
+	reg [`COLOR_BITES] temp_rect_background_color = 0;
 
 	// outputs
 	wire [`X_BITES] rect_out_x;
@@ -152,6 +167,53 @@ module html_parser(
 			out_pause = 0;
 		end
 	end
+	
+	always @(*) begin
+		if(element_enable && char == ">") begin
+		// Reset
+					if(element_out_is_closing) begin
+						 if(element_out_tag == `TAG_P) begin
+							text_x = 0;
+							text_y = text_y + (text_size * `FONT_HEIGHT);
+							rect_x = rect_margin;
+							rect_y = text_y + rect_margin;
+
+							text_color = 0;
+							text_size = 1;
+							text_padding = 0;
+						 end else if (element_out_tag == `TAG_DIV) begin
+							text_x = text_padding;
+							text_y = text_y + rect_margin;
+							rect_x = 0;
+							rect_y = rect_y + rect_height;
+
+							rect_width = 0;
+							rect_height = 0;
+							rect_margin = 0;
+							rect_background_color = 0;
+							rect_has_border = 0;
+							rect_border_color = 0;
+						 end
+					end else begin
+						 if(element_out_tag == `TAG_BODY) begin
+							 rect_x = 0;
+							 rect_y = 0;
+							 rect_width = `SCREEN_WIDTH;
+							 rect_height = `SCREEN_HEIGHT;
+						 end else if (element_out_tag == `TAG_DIV) begin
+							 rect_x = temp_rect_x;
+							 rect_y = temp_rect_y;
+							 rect_width = temp_rect_width;
+							 rect_height = temp_rect_height;
+						 end
+						 text_x = temp_text_x;
+						 text_y = temp_text_y;
+						 text_color = temp_text_color;
+						 text_size = temp_text_size;
+						 text_padding = temp_text_padding;
+					end
+		end
+	end
 
 	// or posedge text_out_finished or posedge rect_out_finished or posedge element_out_finished
 	always @(posedge clock) begin
@@ -164,65 +226,40 @@ module html_parser(
 					// then pause, draw rect
 					// else continue reading
 					
-					// Reset
-					if(element_out_is_closing) begin
-						 if(element_out_tag == `TAG_P) begin
-							text_x <= 0;
-							text_y <= text_y + (text_size * `FONT_HEIGHT);
-							rect_x <= rect_margin;
-							rect_y <= text_y + rect_margin;
-
-							text_color <= 0;
-							text_size <= 1;
-							text_padding <= 0;
-						 end else if (element_out_tag == `TAG_DIV) begin
-							text_x <= text_padding;
-							text_y <= text_y + rect_margin;
-							rect_x <= 0;
-							rect_y <= rect_y + rect_height;
-
-							rect_width <= 0;
-							rect_height <= 0;
-							rect_margin <= 0;
-							rect_background_color <= 0;
-							rect_has_border <= 0;
-							rect_border_color <= 0;
-						 end
-					end else begin
+					if (element_out_is_closing == 0) begin
 						 if(element_out_tag == `TAG_BODY) begin
-							 rect_x <= 0;
-							 rect_y <= 0;
-							 rect_width <= `SCREEN_WIDTH;
-							 rect_height <= `SCREEN_HEIGHT;
+							 
 							 rect_enable <= 1;
 						 end else if (element_out_tag == `TAG_DIV) begin
+							 
 							 rect_enable <= 1;
 						 end
+						
 					end
 				end else begin
 					if (element_out_has_attribute) begin
 						// Read attribute
 						case (element_out_attribute_type)
-							`ATT_COLOR: text_color <= element_out_attribute_value[`COLOR_BITES];
-							`ATT_SIZE: text_size <= element_out_attribute_value;
-							`ATT_WIDTH: rect_width <= element_out_attribute_value[`X_BITES];
-							`ATT_HEIGHT: rect_height <= element_out_attribute_value[`Y_BITES];
+							`ATT_COLOR: temp_text_color <= element_out_attribute_value[`COLOR_BITES];
+							`ATT_SIZE: temp_text_size <= element_out_attribute_value;
+							`ATT_WIDTH: temp_rect_width <= element_out_attribute_value[`X_BITES];
+							`ATT_HEIGHT: temp_rect_height <= element_out_attribute_value[`Y_BITES];
 							// `ATT_SRC: 
 							// `ATT_HREF: 
-							`ATT_BG: rect_background_color <= element_out_attribute_value[`COLOR_BITES];
+							`ATT_BG: temp_rect_background_color <= element_out_attribute_value[`COLOR_BITES];
 							`ATT_PADDING: begin
-								text_padding <= element_out_attribute_value[`X_BITES];
-								text_x <= text_x + text_padding;
-								text_y <= text_y + text_padding[`Y_BITES];
+								temp_text_padding <= element_out_attribute_value[`X_BITES];
+								temp_text_x <= text_x + text_padding;
+								temp_text_y <= text_y + text_padding[`Y_BITES];
 							end
 							`ATT_MARGIN: begin
-								rect_margin <= element_out_attribute_value[`X_BITES];
-								rect_x <= rect_x + rect_margin;
-								rect_y <= rect_y + rect_margin[`Y_BITES];
+								temp_rect_margin <= element_out_attribute_value[`X_BITES];
+								temp_rect_x <= rect_x + rect_margin;
+								temp_rect_y <= rect_y + rect_margin[`Y_BITES];
 							end
 							`ATT_BORDER: begin
-								rect_has_border <= 1;
-								rect_border_color <= element_out_attribute_value[`COLOR_BITES];
+								temp_rect_has_border <= 1;
+								temp_rect_border_color <= element_out_attribute_value[`COLOR_BITES];
 							end
 							// `ATT_POSITION:
 						endcase
@@ -232,13 +269,13 @@ module html_parser(
 				// if (out_pause) begin
 					if(text_enable == 1 && text_out_finished == 1) begin
 						text_enable <= 0;
-						text_x <= text_x + `FONT_WIDTH + `FONT_KERNING;
+						temp_text_x <= text_x + `FONT_WIDTH + `FONT_KERNING;
 					end else if (rect_enable && rect_out_finished) begin
 						rect_enable <= 0;
 					end else if(char == "<") begin
 						text_enable <= 0;
 						element_enable <= 1;
-					end else begin
+					end else if(rect_enable == 0) begin
 						// Reading text
 						text_enable <= 1;
 					end

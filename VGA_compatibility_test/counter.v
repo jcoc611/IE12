@@ -5,9 +5,9 @@
 module counter(
 	input clk,              					// clock
 	input start_count,      					// signal to start counting
-	input [`X_Y_PRODUCT_BITES] limit, // the number to count upto
+	input [16:0] limit, // the number to count upto
 	output reg counting,    					// whether the clock is still counting
-	output reg [`X_Y_PRODUCT_BITES] result // resulting output
+	output reg [16:0] result // resulting output
 	);
 
 	initial counting = 0;

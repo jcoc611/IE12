@@ -70,7 +70,7 @@ module part2
     
     wire [8:0] width;
     wire [7:0] height;
-    wire draw_signal, dummy1,
+    wire draw_signal, dummy1;
 
     // Instansiate datapath
     datapath d0(
@@ -202,7 +202,6 @@ module datapath(
             color_stream = 0;
             x_stream = 0;
             y_stream = 0;
-            writeEn = 0;
 
             width = 0;
             height = 0;

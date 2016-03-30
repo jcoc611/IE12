@@ -58,6 +58,7 @@ module character_renderer(
 				if(state_init_square == 1) begin
 					state_init_square <= 0;
 					square_state_enabled <= 1;
+					is_drawing <= 1;
 				end else begin
 					if(square_state_enabled == 1) begin
 						if(square_state_finished == 1) begin
@@ -67,10 +68,10 @@ module character_renderer(
 					end else begin
 						if(decoder_pixels[`FONT_MAX_BIT - state_pixel_index] == 1) begin
 							// Figure out origin for next pixel
-							square_origin_x <= size * (state_pixel_index % `FONT_WIDTH);
-							square_origin_y <= size * (state_pixel_index / `FONT_WIDTH);
+							square_origin_x <= origin_x + (size * (state_pixel_index % `FONT_WIDTH));
+							square_origin_y <= origin_y + (size * (state_pixel_index / `FONT_WIDTH));
 							state_init_square <= 1;
-							is_drawing <= 1;
+							
 						end else begin
 							state_pixel_index <= state_pixel_index + 1;
 							is_drawing <= 0;
