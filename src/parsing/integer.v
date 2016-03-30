@@ -26,18 +26,26 @@ module integer_parser(
 		char_val
 	);
 
+	always @(*) begin
+		if(char == " " || char == ">") begin
+			has_finished = 1;
+		end else begin
+			has_finished = (has_finished && state_enable);
+		end
+	end
+
 	always @(posedge clock) begin
 		if (state_enable == 1) begin
 			if (has_finished == 0) begin
 				if (char == " ") begin
-					has_finished <= 1;
+					// has_finished <= 1;
 				end else begin
 					// Read digits
 					value <= (value * 10) + char_val;
 				end
 			end
 		end else begin
-			has_finished <= 0;
+			// has_finished <= 0;
 			value <= 0;
 		end
 	end

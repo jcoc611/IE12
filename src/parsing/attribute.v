@@ -41,8 +41,10 @@ module attribute_parser(
 	always @(*) begin
 		if(int_state_enable && int_state_finished) begin
 			has_finished = 1;
+			out_value = int_value;
 		end else begin
 			has_finished = 0;
+			out_value = 0;
 		end
 	end
 
@@ -56,7 +58,7 @@ module attribute_parser(
 						int_state_enable <= 1;
 					end else begin
 						if (int_state_finished == 1) begin
-							out_value <= int_value;
+							// out_value <= int_value;
 							state_last_char <= 0;
 							state_type_found <= 0;
 							state_equals <= 0;
@@ -110,7 +112,7 @@ module attribute_parser(
 			// reset
 			state_last_char <= 0;
 			out_type <= 0;
-			out_value <= 0;
+			// out_value <= 0;
 			state_type_found <= 0;
 			state_equals <= 0;
 			int_state_enable <= 0;

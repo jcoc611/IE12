@@ -170,121 +170,101 @@ module html_parser(
 	
 	always @(*) begin
 		if(element_enable && char == ">") begin
-		// Reset
-					if(element_out_is_closing) begin
-						 if(element_out_tag == `TAG_P) begin
-							text_x = 0;
-							text_y = text_y + (text_size * `FONT_HEIGHT);
-							rect_x = rect_margin;
-							rect_y = text_y + rect_margin;
+			// Reset
+			element_enable = 0;
+			if(element_out_is_closing) begin
+				if(element_out_tag == `TAG_P) begin
+					text_x = 0;
+					text_y = text_y + (text_size * `FONT_HEIGHT);
+					rect_x = rect_margin;
+					rect_y = text_y + rect_margin;
 
-							text_color = 0;
-							text_size = 1;
-							text_padding = 0;
-						 end else if (element_out_tag == `TAG_DIV) begin
-							text_x = text_padding;
-							text_y = text_y + rect_margin;
-							rect_x = 0;
-							rect_y = rect_y + rect_height;
+					text_color = 0;
+					text_size = 1;
+					text_padding = 0;
+				end else if (element_out_tag == `TAG_DIV) begin
+					text_x = text_padding;
+					text_y = text_y + rect_margin;
+					rect_x = 0;
+					rect_y = rect_y + rect_height;
 
-							rect_width = 0;
-							rect_height = 0;
-							rect_margin = 0;
-							rect_background_color = 0;
-							rect_has_border = 0;
-							rect_border_color = 0;
-						 end
-					end else begin
-						 if(element_out_tag == `TAG_BODY) begin
-							 rect_x = 0;
-							 rect_y = 0;
-							 rect_width = `SCREEN_WIDTH;
-							 rect_height = `SCREEN_HEIGHT;
-						 end else if (element_out_tag == `TAG_DIV) begin
-							 rect_x = temp_rect_x;
-							 rect_y = temp_rect_y;
-							 rect_width = temp_rect_width;
-							 rect_height = temp_rect_height;
-						 end
-						 text_x = temp_text_x;
-						 text_y = temp_text_y;
-						 text_color = temp_text_color;
-						 text_size = temp_text_size;
-						 text_padding = temp_text_padding;
-					end
+					rect_width = 0;
+					rect_height = 0;
+					rect_margin = 0;
+					rect_background_color = 0;
+					rect_has_border = 0;
+					rect_border_color = 0;
+				end
+				rect_enable = 0;
+			end else begin
+				if(element_out_tag == `TAG_BODY) begin
+					rect_x = 0;
+					rect_y = 0;
+					rect_width = `SCREEN_WIDTH;
+					rect_height = `SCREEN_HEIGHT;
+					rect_enable = 1;
+				end else if (element_out_tag == `TAG_DIV) begin
+					rect_x = temp_rect_x;
+					rect_y = temp_rect_y;
+					rect_width = temp_rect_width;
+					rect_height = temp_rect_height;
+					rect_enable = 1;
+				end else begin
+					rect_enable = 0;
+				end
+				text_x = temp_text_x;
+				text_y = temp_text_y;
+				text_color = temp_text_color;
+				text_size = temp_text_size;
+				text_padding = temp_text_padding;
+			end
+		end else if(char == "<") begin
+			element_enable = 1;
+			rect_enable = 0;
+			text_enable = 0;
+		end
+
+		if(rect_enable && rect_out_finished) begin
+			rect_enable = 0;
+		end
+
+		if(text_enable && text_out_finished) begin
+			text_enable = 0;
+			text_x = text_x + `FONT_WIDTH + `FONT_KERNING;
+		end else if(!rect_enable && !element_enable && char != "<" && char != ">") begin
+			text_enable = 1;
 		end
 	end
 
-	// or posedge text_out_finished or posedge rect_out_finished or posedge element_out_finished
 	always @(posedge clock) begin
-		if (state_enable) begin
-			if (element_enable) begin
-				// Reading attribute k/v pairs
-				if (element_out_finished) begin
-					element_enable <= 0;
-					// If element is block
-					// then pause, draw rect
-					// else continue reading
-					
-					if (element_out_is_closing == 0) begin
-						 if(element_out_tag == `TAG_BODY) begin
-							 
-							 rect_enable <= 1;
-						 end else if (element_out_tag == `TAG_DIV) begin
-							 
-							 rect_enable <= 1;
-						 end
-						
-					end
-				end else begin
-					if (element_out_has_attribute) begin
-						// Read attribute
-						case (element_out_attribute_type)
-							`ATT_COLOR: temp_text_color <= element_out_attribute_value[`COLOR_BITES];
-							`ATT_SIZE: temp_text_size <= element_out_attribute_value;
-							`ATT_WIDTH: temp_rect_width <= element_out_attribute_value[`X_BITES];
-							`ATT_HEIGHT: temp_rect_height <= element_out_attribute_value[`Y_BITES];
-							// `ATT_SRC: 
-							// `ATT_HREF: 
-							`ATT_BG: temp_rect_background_color <= element_out_attribute_value[`COLOR_BITES];
-							`ATT_PADDING: begin
-								temp_text_padding <= element_out_attribute_value[`X_BITES];
-								temp_text_x <= text_x + text_padding;
-								temp_text_y <= text_y + text_padding[`Y_BITES];
-							end
-							`ATT_MARGIN: begin
-								temp_rect_margin <= element_out_attribute_value[`X_BITES];
-								temp_rect_x <= rect_x + rect_margin;
-								temp_rect_y <= rect_y + rect_margin[`Y_BITES];
-							end
-							`ATT_BORDER: begin
-								temp_rect_has_border <= 1;
-								temp_rect_border_color <= element_out_attribute_value[`COLOR_BITES];
-							end
-							// `ATT_POSITION:
-						endcase
-					end
+		if (state_enable && element_enable && element_out_finished == 0 && element_out_has_attribute) begin
+			// Reading attribute k/v pairs
+			
+			// Read attribute
+			case (element_out_attribute_type)
+				`ATT_COLOR: temp_text_color <= element_out_attribute_value[`COLOR_BITES];
+				`ATT_SIZE: temp_text_size <= element_out_attribute_value;
+				`ATT_WIDTH: temp_rect_width <= element_out_attribute_value[`X_BITES];
+				`ATT_HEIGHT: temp_rect_height <= element_out_attribute_value[`Y_BITES];
+				// `ATT_SRC: 
+				// `ATT_HREF: 
+				`ATT_BG: temp_rect_background_color <= element_out_attribute_value[`COLOR_BITES];
+				`ATT_PADDING: begin
+					temp_text_padding <= element_out_attribute_value[`X_BITES];
+					temp_text_x <= text_x + text_padding;
+					temp_text_y <= text_y + text_padding[`Y_BITES];
 				end
-			end else begin
-				// if (out_pause) begin
-					if(text_enable == 1 && text_out_finished == 1) begin
-						text_enable <= 0;
-						temp_text_x <= text_x + `FONT_WIDTH + `FONT_KERNING;
-					end else if (rect_enable && rect_out_finished) begin
-						rect_enable <= 0;
-					end else if(char == "<") begin
-						text_enable <= 0;
-						element_enable <= 1;
-					end else if(rect_enable == 0) begin
-						// Reading text
-						text_enable <= 1;
-					end
-				// end
-			end
-		end else begin
-			// Done drawing
-			rect_enable <= 0;
-			text_enable <= 0;
+				`ATT_MARGIN: begin
+					temp_rect_margin <= element_out_attribute_value[`X_BITES];
+					temp_rect_x <= rect_x + rect_margin;
+					temp_rect_y <= rect_y + rect_margin[`Y_BITES];
+				end
+				`ATT_BORDER: begin
+					temp_rect_has_border <= 1;
+					temp_rect_border_color <= element_out_attribute_value[`COLOR_BITES];
+				end
+				// `ATT_POSITION:
+			endcase
 		end
 	end
 endmodule

@@ -66,6 +66,7 @@ module datapath(
     // on the next clk edge it is put back to 0
     reg is_started = 0;
     reg is_started_2 = 0;
+    initial done = 0;
 
     always @(*) begin
         if(enable && is_started == 0) begin
@@ -93,7 +94,8 @@ module datapath(
      * counting         whether the clock currently counting
      * result           resulting output
      */
-    counter c0(clk, start_signal, limit, writeEn, offset);
+    counter c0(clk, start_signal, limit, has_finished, offset);
+    assign writeEn = ~has_finished;
 
     // load the output registers
     always@(*) begin
@@ -116,7 +118,7 @@ module datapath(
             // setting screen boundary limits
             x_stream = (x_stream >= 9'd320) ? 9'd319 : x_stream;
             // writeEn is handled by counter
-            done = ~writeEn;
+            done = has_finished;
         end
     end
 endmodule
