@@ -10,103 +10,174 @@
  *    Thus, the element content is NOT parsed by this circuit.
  */
 module element_parser(
-	input [`CHAR_BITES] char, 											// char stream
-	input state_enable,															// enable / ~reset
-	input clock,																		// global clock
+	input [`CHAR_BITES] char,
+	input enable,
+	input reset,
+	input clock,
 
-	output reg has_finished,												// has finished flag
-	output reg [`ELE_TAG_BITES] element_tag,				// int representation of element tag
-	output reg is_closing_tag, // 0 means opening tag, 1 is closing tag </div>
+	/** Basic std output. */
+	output reg next_char,
+	output reg has_finished,								// has finished flag
+	output [`ELE_TAG_BITES] element_tag,					// int representation of element tag
+	output is_closing_tag,								// 0 means opening tag, 1 is closing tag </div>
 
-	output reg has_attribute, /** 1 when outputting attribute k/v */
-	output [`ATTRIBUTE_TYPE_BITES] attribute_type, 		// attribute type
-	output [`ATTRIBUTE_VAL_BITES] attribute_value 		// attribute value
+	/** Attribute stream output. */
+	output has_attribute,								// If HTML parser should read attribute
+	output [`ATTRIBUTE_TYPE_BITES] attribute_type,				// attribute type
+	output [`ATTRIBUTE_VAL_BITES] attribute_value				// attribute value
 );
-	reg state_tag_found = 0; 					// flag to know if tag type has been found
-	reg state_tag_finished = 0; 			// flag to know if we have finished parsing tag
+	/** Tag parsing */
+	reg tag_enable;
+	wire tag_next_char;
+	wire tag_has_finished;
+
+	element_tag_parser tagparser(
+		char,
+		tag_enable,
+		reset,
+		clock,
+
+		tag_next_char,
+		tag_has_finished,
+		element_tag,
+		is_closing_tag
+	);
 
 	/** Attribute parser state vars. */
-	reg attribute_state_enable = 0;
-	wire attribute_state_finished;
+	reg att_enable;
+	reg att_reset;
+	wire att_next_char;
 
 	attribute_parser p(
 		char,
-		attribute_state_enable,
+		att_enable,
+		att_reset,
 		clock,
 
-		attribute_state_finished,
+		att_next_char,
+		has_attribute,
 		attribute_type,
 		attribute_value
 	);
 
+	reg idle_next_char;
+
 	always @(*) begin
-		has_attribute = (attribute_state_enable && attribute_state_finished);
-		if(char == ">") begin
-			has_finished = 1;
+		if (tag_enable) begin
+			next_char = tag_next_char;
+		end else if(att_enable) begin
+			next_char = att_next_char;
 		end else begin
-			has_finished = 0;
+			next_char = idle_next_char;
 		end
 	end
+
+	reg has_reached_end;	// Different from has_finished.
+				// basically has_finished is true when both
+				// has_reach_end is true
+				// and attribute parser is off/done
 	
- // or attribute_state_finished
 	always @(posedge clock) begin
-		if (state_enable == 1) begin
-			if (has_finished == 0) begin
-				if (state_tag_found == 1) begin
-					if (state_tag_finished == 1) begin
-						// Reading attributes until a >
-						if (attribute_state_enable == 1) begin
-							if (char == ">" || attribute_state_finished == 1) begin
-								// We have finished
-								attribute_state_enable <= 0;
-							end
-						end else begin
-							// Skip whitespace until next attribute
-							//has_attribute <= 0;
-							if (char != " ")
-								if (char != ">") begin
-									attribute_state_enable <= 1;
-								end
+		if(reset) begin
+			tag_enable <= 0;
+			att_enable <= 0;
+			has_reached_end <= 0;
+			att_reset <= 1;
+			idle_next_char <= 0;
+			has_finished <= 0;
+		end else if (enable && !has_reached_end) begin
+			if(char == ">") begin
+				has_reached_end <= 1;
+			end else if (tag_has_finished) begin
+				// Tag finished, Reading attributes until a >
+				tag_enable <= 0;
+
+				if (att_enable && has_attribute) begin
+					// We have an attribute to be read,
+					// lets leave it for a clock cycle
+					att_enable <= 0;
+					idle_next_char <= 0;
+				end else if(!att_enable && !att_reset) begin
+					att_reset <= 1;
+				end
+
+				if(att_reset) begin
+					if(idle_next_char) begin
+						idle_next_char <= 0;
+						if(char != " ") begin
+							att_reset <= 0;
+							att_enable <= 1;
 						end
 					end else begin
-						// Reading tag, but already know type
-						// So we will ignore everything until a space
-						if (char == " ") begin
-							state_tag_finished <= 1;
-							attribute_state_enable <= 1; 			// start reading attributes
-						end
+						idle_next_char <= 1;
 					end
+				end
+
+			end else begin
+				// Still figuring out what type/tag the element is
+				tag_enable <= 1;
+			end
+		end else if(has_reached_end && !has_finished) begin
+			if(!att_enable || has_attribute) begin
+				has_finished <= 1;
+			end
+		end
+	end
+endmodule
+
+module element_tag_parser(
+	input [`CHAR_BITES] char,
+	input enable,
+	input reset,
+	input clock,
+
+	output reg next_char,
+	output reg has_finished,
+	output reg [`ATTRIBUTE_TYPE_BITES] out_tag,
+	output reg is_closing_tag
+);
+	reg tag_found = 0;
+
+	always @(posedge clock) begin
+		if (enable) begin
+			if(!has_finished) begin
+				if(char == " ") begin
+					has_finished <= 1;
+				end else if(!next_char) begin
+					if(!tag_found)  begin
+						// Determine tag
+						tag_found <= 1;
+						case(char)
+							"/": begin
+								tag_found <= 0;
+								is_closing_tag <= 1;
+							end
+							// div
+							"d": out_tag <= `TAG_DIV;
+							// p(aragraph)
+							"p": out_tag <= `TAG_P;
+							// body
+							"b": out_tag <= `TAG_BODY;
+							// a (link)
+							"a": out_tag <= `TAG_A;
+							// i(mage)
+							"i": out_tag <= `TAG_IMG;
+							default: tag_found <= 0;
+						endcase
+					end
+
+					next_char <= 1;
 				end else begin
-					// Still figuring out what type/tag the element is
-					state_tag_found <= 1;
-					case(char)
-						"/": begin
-							state_tag_found <= 0;
-							is_closing_tag <= 1;
-						end
-						// div
-						"d": element_tag <= `TAG_DIV;
-						// p(aragraph)
-						"p": element_tag <= `TAG_P;
-						// body
-						"b": element_tag <= `TAG_BODY;
-						// a (link)
-						"a": element_tag <= `TAG_A;
-						// i(mage)
-						"i": element_tag <= `TAG_IMG;
-						default: state_tag_found <= 0;
-					endcase
+					// Wait for new char
+					next_char <= 0;
 				end
 			end
-		end else begin
-			// reset
-			element_tag <= 0;
+		end else if (reset) begin
+			next_char <= 1;
+			out_tag <= 0;
+			has_finished <= 0;
 			is_closing_tag <= 0;
-			state_tag_found <= 0;
-			state_tag_finished <= 0;
-
-			attribute_state_enable <= 0;
-			//has_attribute <= 0;
+			tag_found <= 0;
 		end
 	end
 endmodule

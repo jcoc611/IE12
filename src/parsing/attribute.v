@@ -2,78 +2,105 @@
 /**
  * Parses an XML attribute.
  *
- * @param {ASCII} char 												A character stream.
- * @param {boolean} state_enable 							Enable/~Reset
- * @param {boolean} clock 										The global clock.
+ * @param {ASCII} char 				A character stream.
+ * @param {boolean} state_enable 			Enable/~Reset
+ * @param {boolean} clock 				The global clock.
  *
- * @output {boolean} has_finished 						Whether this circuit is done.
+ * @output {boolean} has_finished 			Whether this circuit is done.
  * @output {AttributeType (int)} out_type 		The type of attribute. (Ex, width). See constants.v
- * @output {AttributeVal} out_value 					The value of the attribute. Type depends
- *           																	on the attribute type.
+ * @output {AttributeVal} out_value 			The value of the attribute. Type depends on the attribute type.
  */
 module attribute_parser(
 	input [`CHAR_BITES] char,
-	input state_enable,
+	input enable,
+	input reset,
 	input clock,
 
+	output reg next_char,
 	output reg has_finished,
-	output reg [`ATTRIBUTE_TYPE_BITES] out_type,
-	output reg [`ATTRIBUTE_VAL_BITES] out_value
+	output [`ATTRIBUTE_TYPE_BITES] out_type,
+	output [`ATTRIBUTE_VAL_BITES] out_value
 );
-	/** Character previously read. */
-	reg [`CHAR_BITES] state_last_char = 0; 			// last character
-	reg state_type_found = 0; 									// flag to know if the type of attribute has been recognized
-	reg state_equals = 0; 											// flag, if it has found "=" char
+	reg att_enable;
+	wire att_next_char;
+	wire type_found;
 
-	wire int_state_finished;
-	wire [`ATTRIBUTE_VAL_BITES] int_value;
-	reg int_state_enable = 0;
+	attribute_type_parser attparser(
+		char,
+		att_enable,
+		reset,
+		clock,
+
+		att_next_char,
+		type_found,
+		out_type
+	);
+
+	wire int_next_char;
+	wire int_finished;
+	reg int_enable;
 
 	integer_parser p(
 		char,
-		int_state_enable,
+		int_enable,
+		reset,
 		clock,
 
-		int_value,
-		int_state_finished
+		int_next_char,
+		int_finished,
+		out_value
 	);
-	
+
 	always @(*) begin
-		if(int_state_enable && int_state_finished) begin
-			has_finished = 1;
-			out_value = int_value;
-		end else begin
-			has_finished = 0;
-			out_value = 0;
-		end
+		if(int_enable)
+			next_char = int_next_char;
+		else
+			next_char = att_next_char;
 	end
 
 	always @(posedge clock) begin
-		if (state_enable == 1) begin
-			if (has_finished == 0) begin
-				if (state_equals == 1) begin
-					// Reading value
-					// For now, only reads int
-					if (int_state_enable == 0) begin
-						int_state_enable <= 1;
-					end else begin
-						if (int_state_finished == 1) begin
-							// out_value <= int_value;
-							state_last_char <= 0;
-							state_type_found <= 0;
-							state_equals <= 0;
-							
-						end
-					end
-				end else begin
-					// Reading type
-					if (state_type_found == 1) begin
-						// Ignore everything until =
-						if (char == "=") begin
-							state_equals <= 1;
-							int_state_enable <= 1;
-						end
-					end else begin
+		if (enable && !has_finished) begin
+			if (!att_enable && !int_enable) begin
+				att_enable <= 1;
+			end else if (att_enable) begin
+				// Reading type
+				if(type_found) begin
+					att_enable <= 0;
+					int_enable <= 1;
+				end
+			end else if (int_finished) begin
+				has_finished <= 1;
+			end
+		end else if(reset) begin
+			// reset
+			int_enable <= 0;
+			att_enable <= 0;
+			has_finished <= 0;
+		end
+	end
+endmodule
+
+module attribute_type_parser(
+	input [`CHAR_BITES] char,
+	input enable,
+	input reset,
+	input clock,
+
+	output reg next_char,
+	output reg has_finished,
+	output reg [`ATTRIBUTE_TYPE_BITES] out_type
+);
+
+	reg [ `CHAR_BITES] state_last_char = 0;
+	reg state_type_found = 0;
+
+	always @(posedge clock) begin
+		if (enable) begin
+			if(!has_finished) begin
+				if(char == "=") begin
+					has_finished <= 1;
+				end else if(!next_char) begin
+					if(!state_type_found)  begin
 						// Determine type
 						state_type_found <= 1;
 						case (char)
@@ -106,16 +133,19 @@ module attribute_parser(
 						endcase
 						state_last_char <= char;
 					end
+
+					next_char <= 1;
+				end else begin
+					// Wait for new char
+					next_char <= 0;
 				end
 			end
-		end else begin
-			// reset
-			state_last_char <= 0;
+		end else if (reset) begin
+			next_char <= 1;
 			out_type <= 0;
-			// out_value <= 0;
+			has_finished <= 0;
+			state_last_char <= 0;
 			state_type_found <= 0;
-			state_equals <= 0;
-			int_state_enable <= 0;
 		end
 	end
 endmodule

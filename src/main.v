@@ -4,32 +4,31 @@
  * the top level module connecting to the VGA
  */
 
-module main
-	(
+module main(
 		CLOCK_50,						//	On Board 50 MHz
 		KEY,
 		// The ports below are for the VGA output.  Do not change.
-		VGA_CLK,   						//	VGA Clock
-		VGA_HS,							//	VGA H_SYNC
-		VGA_VS,							//	VGA V_SYNC
+		VGA_CLK,						//	VGA Clock
+		VGA_HS,						//	VGA H_SYNC
+		VGA_VS,						//	VGA V_SYNC
 		VGA_BLANK,						//	VGA BLANK
 		VGA_SYNC,						//	VGA SYNC
-		VGA_R,   						//	VGA Red[9:0]
-		VGA_G,	 						//	VGA Green[9:0]
-		VGA_B   						//	VGA Blue[9:0]
+		VGA_R,						//	VGA Red[9:0]
+		VGA_G,						//	VGA Green[9:0]
+		VGA_B							//	VGA Blue[9:0]
 	);
 
 	input			CLOCK_50;				//	50 MHz
 	input 	[3:0] KEY;
 	// Do not change the following outputs
-	output			VGA_CLK;   				//	VGA Clock
-	output			VGA_HS;					//	VGA H_SYNC
-	output			VGA_VS;					//	VGA V_SYNC
+	output			VGA_CLK;				//	VGA Clock
+	output			VGA_HS;				//	VGA H_SYNC
+	output			VGA_VS;				//	VGA V_SYNC
 	output			VGA_BLANK;				//	VGA BLANK
 	output			VGA_SYNC;				//	VGA SYNC
-	output	[9:0]	VGA_R;   				//	VGA Red[9:0]
-	output	[9:0]	VGA_G;	 				//	VGA Green[9:0]
-	output	[9:0]	VGA_B;   				//	VGA Blue[9:0]
+	output	[9:0]		VGA_R;				//	VGA Red[9:0]
+	output	[9:0]		VGA_G;				//	VGA Green[9:0]
+	output	[9:0]		VGA_B;					//	VGA Blue[9:0]
 
 	wire resetn;
 	assign resetn = KEY[0];
@@ -68,31 +67,29 @@ module main
 		defparam VGA.BACKGROUND_IMAGE = "white.mif";
 
 
-		wire [`CHAR_BITES] char; 		// char stream wire
-		wire has_finished_connection;
-		wire has_not_finished_connection = ~has_finished_connection;
-		wire pause_connection;
+	wire [`CHAR_BITES] char;		// char stream wire
+	wire has_finished_connection;
+	wire has_not_finished_connection = ~has_finished_connection;
+	wire char_read;
 
-		html_parser hp(
-			CLOCK_50,
-			char,
-			has_not_finished_connection,
+	html_parser hp(
+		CLOCK_50,
+		char,
+		has_not_finished_connection,
 
-			x,
-			y,
-			colour,
-			pause_connection, 		// pause signal to reader
-			writeEn
-		);
+		x,
+		y,
+		colour,
+		char_reads, 		// pause signal to reader
+		writeEn
+	);
 
 	dummy_reader dr(
-	  1'b1, 										// enable / ~reset
-	  CLOCK_50,                 // clock
-	  1'b0,
-	  pause_connection,
+		char_read,			// enable / ~reset
+		CLOCK_50,			// clock
 
-	  has_finished_connection,  // has it finished?
-	  char             					// output char stream
+		has_finished_connection,	// has it finished?
+		char				// output char stream
 	);
 
 endmodule

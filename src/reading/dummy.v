@@ -7,8 +7,6 @@
 module dummy_reader(
 	input state_enable,
 	input clock,
-	input [7:0] argument,
-	input pause,
 
 	output reg has_finished,
 	output reg [`CHAR_BITES] char
@@ -16,7 +14,7 @@ module dummy_reader(
 	// <body><p color=1 size=2 >test</p></body>
 	wire [`CHAR_BITES] foo [0:40];
 
-	assign foo[0]  = "<";
+	assign foo[0]  = "<"; // Not actually used
 	assign foo[1]  = "b";
 	assign foo[2]  = "o";
 	assign foo[3]  = "d";
@@ -31,7 +29,7 @@ module dummy_reader(
 	assign foo[12]  = "o";
 	assign foo[13]  = "r";
 	assign foo[14]  = "=";
-	assign foo[15]  = "1";
+	assign foo[15]  = "7";
 	assign foo[16]  = " ";
 	assign foo[17]  = "s";
 	assign foo[18]  = "i";
@@ -59,27 +57,27 @@ module dummy_reader(
 	assign foo[40]  = "\0";
 
 	reg [5:0] char_index = 0;
+	reg has_char = 0;
 	
 	initial char = 0;
 	initial has_finished = 0;
 	initial char_index = 0;
 
 	always @(posedge clock or posedge pause) begin
-		if(pause) begin
-			//do nothing
-		end else if(state_enable == 1) begin
-			if(has_finished == 0) begin
-				if(char_index == 40) begin
-					has_finished <= 1;
-				end else begin
-					char <= foo[char_index];
-					char_index <= char_index + 1;
-				end
-			end
-		end else begin
-			char <= 0;
-			has_finished <= 0;
-			char_index <= 0;
+		if(state_enable == 1 && has_char == 0) begin
+			has_char <= 1;
+			char_index <= char_index + 1;
+			if(char_index == 40) begin
+				has_finished <= 1;
+			else				
+				char <= foo[char_index];
+		end else if(state_enable == 0) begin
+			has_char <= 0;
 		end
 	end
+
+	// TODO Add reset
+	// char <= 0;
+	// has_finished <= 0;
+	// char_index <= 0;
 endmodule

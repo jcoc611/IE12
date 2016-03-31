@@ -13,39 +13,40 @@
 
 module integer_parser(
 	input [`CHAR_BITES] char,
-	input state_enable,
+	input enable,				// Active enable
+	input reset,				// Sync reset
 	input clock,
 
-	output reg [`ATTRIBUTE_VAL_BITES] value,
-	output reg has_finished
+	output reg next_char,			// Finished processing current char?
+	output reg has_finished,			// Finished processing stream?
+	output reg [`ATTRIBUTE_VAL_BITES] value
 );
 	wire [`ATTRIBUTE_VAL_BITES] char_val;
 
+	/** Initial values. */
+	initial has_finished = 0;
+	initial value = 0;
+
+	/** This converter is a datapath. */
 	char_to_int converter(
 		char,
 		char_val
 	);
 
-	always @(*) begin
-		if(char == " " || char == ">") begin
-			has_finished = 1;
-		end else begin
-			has_finished = (has_finished && state_enable);
-		end
-	end
-
 	always @(posedge clock) begin
-		if (state_enable == 1) begin
-			if (has_finished == 0) begin
-				if (char == " ") begin
-					// has_finished <= 1;
-				end else begin
-					// Read digits
-					value <= (value * 10) + char_val;
-				end
+		if (enable) begin
+			if (char == " " || char == ">") begin
+				has_finished <= 1;
+			end else if(!next_char) begin
+				// Read digits, ask for new char
+				value <= (value * 10) + char_val;
+				next_char <= 1;
+			end else begin
+				// Wait for new char
+				next_char <= 0;
 			end
-		end else begin
-			// has_finished <= 0;
+		end else if(reset) begin
+			has_finished <= 0;
 			value <= 0;
 		end
 	end
