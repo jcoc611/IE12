@@ -3,72 +3,54 @@
 /*
  * the top level module connecting to the VGA
  */
-
-module main
-	(
-		CLOCK_50,						//	On Board 50 MHz
-		KEY,
-		// The ports below are for the VGA output.  Do not change.
-		VGA_CLK,   						//	VGA Clock
-		VGA_HS,							//	VGA H_SYNC
-		VGA_VS,							//	VGA V_SYNC
-		VGA_BLANK,						//	VGA BLANK
-		VGA_SYNC,						//	VGA SYNC
-		VGA_R,   						//	VGA Red[9:0]
-		VGA_G,	 						//	VGA Green[9:0]
-		VGA_B   						//	VGA Blue[9:0]
+module main_test(
+		input CLOCK_50
 	);
 
-	input			CLOCK_50;				//	50 MHz
-	input 	[3:0] KEY;
-	// Do not change the following outputs
-	output			VGA_CLK;   				//	VGA Clock
-	output			VGA_HS;					//	VGA H_SYNC
-	output			VGA_VS;					//	VGA V_SYNC
-	output			VGA_BLANK;				//	VGA BLANK
-	output			VGA_SYNC;				//	VGA SYNC
-	output	[9:0]	VGA_R;   				//	VGA Red[9:0]
-	output	[9:0]	VGA_G;	 				//	VGA Green[9:0]
-	output	[9:0]	VGA_B;   				//	VGA Blue[9:0]
-
-	wire resetn;
-	assign resetn = KEY[0];
-
-	// Create the colour, x, y and writeEn wires that are inputs to the controller.
+	// Create the colour, x, y and plot wires that are inputs to the controller.
 	wire [`COLOR_BITES] colour;
 	wire [`X_BITES] x;
 	wire [`Y_BITES] y;
-	wire parser_plot;
-	
-	
-
+	wire plot;
 	
 
-		wire [`CHAR_BITES] char; 		// char stream wire
-		wire has_finished_connection;
-		wire has_not_finished_connection = ~has_finished_connection;
-		wire pause_connection;
+	reg att_enable = 0;
+	reg has_reset = 0;
 
-		html_parser hp(
-			CLOCK_50,
-			char,
-			has_not_finished_connection,
+	always @(posedge CLOCK_50) begin
+		if(has_reset) begin
+			att_enable <= 1;
+		end else begin
+			att_enable <= 0;
+			has_reset <= 1;
+		end
+	end
 
-			x,
-			y,
-			colour,
-			pause_connection, 		// pause signal to reader
-			parser_plot
-		);
+	wire [`CHAR_BITES] char;
+	wire next_char;
+	wire has_finished;
 
-	dummy_reader dr(
-	  1'b1, 										// enable / ~reset
-	  CLOCK_50,                 // clock
-	  1'b0,
-	  pause_connection,
+	html_parser htmlparse(
+		char,
+		att_enable,
+		~att_enable,
+		CLOCK_50,
 
-	  has_finished_connection,  // has it finished?
-	  char             					// output char stream
+		// Output
+		next_char,
+		has_finished,
+		x,
+		y,
+		colour,
+		plot
+	);
+
+	dummy_reader dummyread(
+		next_char,
+		CLOCK_50,
+
+		eof,
+		char
 	);
 
 endmodule

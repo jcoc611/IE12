@@ -3,7 +3,6 @@
  * Outputs hard-coded HTML as a char stream.
  * For testing purposes only.
  */
-
 module dummy_reader(
 	input state_enable,
 	input clock,
@@ -56,21 +55,23 @@ module dummy_reader(
 	assign foo[39]  = ">";
 	assign foo[40]  = "\0";
 
-	reg [5:0] char_index = 0;
+
+	reg [5:0] char_index = 1;
 	reg has_char = 0;
 	
 	initial char = 0;
 	initial has_finished = 0;
-	initial char_index = 0;
 
-	always @(posedge clock or posedge pause) begin
+	always @(posedge clock) begin
 		if(state_enable == 1 && has_char == 0) begin
 			has_char <= 1;
-			char_index <= char_index + 1;
+			
 			if(char_index == 40) begin
 				has_finished <= 1;
-			else				
+			end else begin				
 				char <= foo[char_index];
+				char_index <= char_index + 1;
+			end
 		end else if(state_enable == 0) begin
 			has_char <= 0;
 		end

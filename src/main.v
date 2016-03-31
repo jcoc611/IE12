@@ -5,41 +5,27 @@
  */
 
 module main(
-		CLOCK_50,						//	On Board 50 MHz
-		KEY,
+		input CLOCK_50,						//	On Board 50 MHz
+		input [3:0] KEY,
 		// The ports below are for the VGA output.  Do not change.
-		VGA_CLK,						//	VGA Clock
-		VGA_HS,						//	VGA H_SYNC
-		VGA_VS,						//	VGA V_SYNC
-		VGA_BLANK,						//	VGA BLANK
-		VGA_SYNC,						//	VGA SYNC
-		VGA_R,						//	VGA Red[9:0]
-		VGA_G,						//	VGA Green[9:0]
-		VGA_B							//	VGA Blue[9:0]
+		output VGA_CLK,						//	VGA Clock
+		output VGA_HS,						//	VGA H_SYNC
+		output VGA_VS,						//	VGA V_SYNC
+		output VGA_BLANK,						//	VGA BLANK
+		output VGA_SYNC,						//	VGA SYNC
+		output	[9:0] VGA_R,						//	VGA Red[9:0]
+		output	[9:0] VGA_G,						//	VGA Green[9:0]
+		output	[9:0] VGA_B							//	VGA Blue[9:0]
 	);
-
-	input			CLOCK_50;				//	50 MHz
-	input 	[3:0] KEY;
-	// Do not change the following outputs
-	output			VGA_CLK;				//	VGA Clock
-	output			VGA_HS;				//	VGA H_SYNC
-	output			VGA_VS;				//	VGA V_SYNC
-	output			VGA_BLANK;				//	VGA BLANK
-	output			VGA_SYNC;				//	VGA SYNC
-	output	[9:0]		VGA_R;				//	VGA Red[9:0]
-	output	[9:0]		VGA_G;				//	VGA Green[9:0]
-	output	[9:0]		VGA_B;					//	VGA Blue[9:0]
 
 	wire resetn;
 	assign resetn = KEY[0];
 
-	// Create the colour, x, y and writeEn wires that are inputs to the controller.
+	// Create the colour, x, y and plot wires that are inputs to the controller.
 	wire [`COLOR_BITES] colour;
 	wire [`X_BITES] x;
 	wire [`Y_BITES] y;
-	
-	reg CLOCK_25;
-	wire writeEn;
+	wire plot;
 	
 
 	// Create an Instance of a VGA controller - there can be only one!
@@ -51,7 +37,7 @@ module main(
 			.colour(colour),
 			.x(x),
 			.y(y),
-			.plot(writeEn),
+			.plot(plot),
 			/* Signals for the DAC to drive the monitor. */
 			.VGA_R(VGA_R),
 			.VGA_G(VGA_G),
@@ -66,30 +52,43 @@ module main(
 		defparam VGA.BITS_PER_COLOUR_CHANNEL = 1;
 		defparam VGA.BACKGROUND_IMAGE = "white.mif";
 
+	reg att_enable = 0;
+	reg has_reset = 0;
 
-	wire [`CHAR_BITES] char;		// char stream wire
-	wire has_finished_connection;
-	wire has_not_finished_connection = ~has_finished_connection;
-	wire char_read;
+	always @(posedge CLOCK_50) begin
+		if(has_reset) begin
+			att_enable <= 1;
+		end else begin
+			att_enable <= 0;
+			has_reset <= 1;
+		end
+	end
 
-	html_parser hp(
-		CLOCK_50,
+	wire [`CHAR_BITES] char;
+	wire next_char;
+	wire has_finished;
+
+	html_parser htmlparse(
 		char,
-		has_not_finished_connection,
+		att_enable,
+		~att_enable,
+		CLOCK_50,
 
+		// Output
+		next_char,
+		has_finished,
 		x,
 		y,
 		colour,
-		char_reads, 		// pause signal to reader
-		writeEn
+		plot
 	);
 
-	dummy_reader dr(
-		char_read,			// enable / ~reset
-		CLOCK_50,			// clock
+	dummy_reader dummyread(
+		next_char,
+		CLOCK_50,
 
-		has_finished_connection,	// has it finished?
-		char				// output char stream
+		eof,
+		char
 	);
 
 endmodule
