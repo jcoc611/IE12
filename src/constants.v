@@ -15,7 +15,7 @@
  */
 `define FONT_WIDTH 8
 `define FONT_HEIGHT 16
-`define FONT_KERNING 1
+`define FONT_KERNING 2
 
 /**
  * The number of bites required to represent
@@ -24,7 +24,7 @@
  */
 `define X_MAX_BIT 9
 `define Y_MAX_BIT 8
-`define CHAR_MAX_BIT 7
+`define CHAR_MAX_BIT 8
 `define COLOR_MAX_BIT 3
 `define ELE_TAG_MAX_BIT 5
 `define FONT_INDEX_MAX_BIT 8

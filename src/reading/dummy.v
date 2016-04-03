@@ -11,52 +11,65 @@ module dummy_reader(
 	output reg [`CHAR_BITES] char
 );
 	// <body><p color=1 size=2 >test</p></body>
-	wire [`CHAR_BITES] foo [0:40];
+	wire [`CHAR_BITES] foo [0:53];
 
 	assign foo[0]  = "<"; // Not actually used
 	assign foo[1]  = "b";
 	assign foo[2]  = "o";
 	assign foo[3]  = "d";
 	assign foo[4]  = "y";
-	assign foo[5]  = ">";
-	assign foo[6]  = "<";
-	assign foo[7]  = "p";
-	assign foo[8]  = " ";
-	assign foo[9]  = "c";
-	assign foo[10]  = "o";
-	assign foo[11]  = "l";
+	assign foo[5]  = " ";
+	assign foo[6]  = "b";
+	assign foo[7]  = "a";
+	assign foo[8]  = "c";
+	assign foo[9]  = "k";
+	assign foo[10]  = "g";
+	assign foo[11]  = "r";
 	assign foo[12]  = "o";
-	assign foo[13]  = "r";
-	assign foo[14]  = "=";
-	assign foo[15]  = "7";
-	assign foo[16]  = " ";
-	assign foo[17]  = "s";
-	assign foo[18]  = "i";
-	assign foo[19]  = "z";
-	assign foo[20]  = "e";
-	assign foo[21]  = "=";
-	assign foo[22]  = "2";
-	assign foo[23]  = " ";
-	assign foo[24]  = ">";
-	assign foo[25]  = "t";
-	assign foo[26]  = "e";
-	assign foo[27]  = "s";
-	assign foo[28]  = "t";
-	assign foo[29]  = "<";
-	assign foo[30]  = "/";
-	assign foo[31]  = "p";
-	assign foo[32]  = ">";
-	assign foo[33]  = "<";
-	assign foo[34]  = "/";
-	assign foo[35]  = "b";
-	assign foo[36]  = "o";
-	assign foo[37]  = "d";
-	assign foo[38]  = "y";
-	assign foo[39]  = ">";
-	assign foo[40]  = "\0";
+	assign foo[13]  = "u";
+	assign foo[14]  = "n";
+	assign foo[15]  = "d";
+	assign foo[16]  = "=";
+	assign foo[17]  = "7";
+	assign foo[18]  = ">";
+	assign foo[19]  = "<";
+	assign foo[20]  = "p";
+	assign foo[21]  = " ";
+	assign foo[22]  = "c";
+	assign foo[23]  = "o";
+	assign foo[24]  = "l";
+	assign foo[25]  = "o";
+	assign foo[26]  = "r";
+	assign foo[27]  = "=";
+	assign foo[28]  = "0";
+	assign foo[29]  = " ";
+	assign foo[30]  = "s";
+	assign foo[31]  = "i";
+	assign foo[32]  = "z";
+	assign foo[33]  = "e";
+	assign foo[34]  = "=";
+	assign foo[35]  = "2";
+	assign foo[36]  = " ";
+	assign foo[37]  = ">";
+	assign foo[38]  = "t";
+	assign foo[39]  = "e";
+	assign foo[40]  = "s";
+	assign foo[41]  = "t";
+	assign foo[42]  = "<";
+	assign foo[43]  = "/";
+	assign foo[44]  = "p";
+	assign foo[45]  = ">";
+	assign foo[46]  = "<";
+	assign foo[47]  = "/";
+	assign foo[48]  = "b";
+	assign foo[49]  = "o";
+	assign foo[50]  = "d";
+	assign foo[51]  = "y";
+	assign foo[52]  = ">";
+	assign foo[53]  = "\0";
 
 
-	reg [5:0] char_index = 1;
+	reg [5:0] char_index = 0;
 	reg has_char = 0;
 	
 	initial char = 0;
@@ -66,7 +79,7 @@ module dummy_reader(
 		if(state_enable == 1 && has_char == 0) begin
 			has_char <= 1;
 			
-			if(char_index == 40) begin
+			if(char_index == 53) begin
 				has_finished <= 1;
 			end else begin				
 				char <= foo[char_index];

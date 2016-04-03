@@ -160,6 +160,7 @@ module html_parser(
 		if(reset) begin
 			/** Element defaults.*/
 			element_enable <= 0;
+			element_reset <= 1;
 
 			/** Rect defaults. */
 			rect_enable <= 0;
@@ -182,6 +183,7 @@ module html_parser(
 
 			/** Other defaults. */
 			idle_next_char <= 0;
+			has_finished <= 0;
 		end else if(enable) begin
 			if(element_enable) begin
 				if(element_out_has_attribute) begin
@@ -263,8 +265,9 @@ module html_parser(
 						end
 					end
 				end
-			end else if(element_out_finished && element_reset) begin
+			end else if(element_reset) begin
 				idle_next_char <= 1;
+				element_reset <= 0;
 			end else if(rect_enable && rect_out_finished) begin
 				rect_enable <= 0;
 				element_reset <= 1;
@@ -272,14 +275,15 @@ module html_parser(
 				text_enable <= 0;
 				text_x = text_x + `FONT_WIDTH + `FONT_KERNING;
 				idle_next_char <= 1;
-			end else if(idle_next_char) begin
+			end else if(!idle_next_char) begin
 				if(char == "<") begin
 					// Reading element
 					element_enable <= 1;
-				end else begin
-					idle_next_char <= 0;
+				end else if(char != ">") begin
 					text_enable <= 1;
 				end
+			end else begin
+				idle_next_char <= 0;
 			end
 		end
 	end

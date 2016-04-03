@@ -21,7 +21,7 @@ module counter(
 		end else if(result + 1'b1 == limit) begin
 			counting = 0;
 		end
-		has_finished = (result + 1'b1 == limit);
+		has_finished = ~counting;
 	end
 
 	always @(posedge clk) begin

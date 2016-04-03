@@ -61,22 +61,21 @@ module element_parser(
 	);
 
 	reg idle_next_char;
-
+	reg has_reached_end;	// Different from has_finished.
+				// basically has_finished is true when both
+				// has_reach_end is true
+				// and attribute parser is off/done
+				
 	always @(*) begin
 		if (tag_enable) begin
 			next_char = tag_next_char;
-		end else if(att_enable) begin
+		end else if(att_enable && !has_reached_end) begin
 			next_char = att_next_char;
 		end else begin
 			next_char = idle_next_char;
 		end
 	end
 
-	reg has_reached_end;	// Different from has_finished.
-				// basically has_finished is true when both
-				// has_reach_end is true
-				// and attribute parser is off/done
-	
 	always @(posedge clock) begin
 		if(reset) begin
 			tag_enable <= 0;
@@ -88,6 +87,7 @@ module element_parser(
 		end else if (enable && !has_reached_end) begin
 			if(char == ">") begin
 				has_reached_end <= 1;
+				tag_enable <= 0;
 			end else if (tag_has_finished) begin
 				// Tag finished, Reading attributes until a >
 				tag_enable <= 0;
@@ -102,14 +102,12 @@ module element_parser(
 				end
 
 				if(att_reset) begin
-					if(idle_next_char) begin
-						idle_next_char <= 0;
-						if(char != " ") begin
-							att_reset <= 0;
-							att_enable <= 1;
-						end
-					end else begin
+					if(char == " ") begin
 						idle_next_char <= 1;
+					end else begin
+						idle_next_char <= 0;
+						att_reset <= 0;
+						att_enable <= 1;
 					end
 				end
 
