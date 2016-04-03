@@ -33,11 +33,11 @@ module square_renderer(
 				end else begin
 					// Draw next row
 					current_x <= origin_x;
-					current_y <= current_y + 1;
+					current_y <= current_y + 1'b1;
 				end
 			end else begin
 				// Draw next pixel in row
-				current_x <= current_x + 1;
+				current_x <= current_x + 1'b1;
 			end
 		end else begin
 			state_finished <= 0;

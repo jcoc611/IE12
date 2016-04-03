@@ -16,4 +16,4 @@ add wave {/*}
 
 # TEST EVERYTHING
 force {CLOCK_50} 1 0, 0 5 -r 10
-run 10ms
+run 790ns

@@ -13,22 +13,18 @@ module counter(
 	reg counting = 0;
 	initial result = 17'b0;
 
-	initial has_finished = 0;
-
-	always @(*) begin
-		if(start_count) begin
-			counting = 1;
-		end else if(result + 1'b1 == limit) begin
-			counting = 0;
-		end
-		has_finished = ~counting;
-	end
-
 	always @(posedge clk) begin
 		if (counting) begin
-			result <= result + 1'b1;
+			if(result + 1'b1 == limit) begin
+				counting <= 0;
+				has_finished <= 1;
+			end else begin
+				result <= result + 1'b1;	
+			end
 		end else begin
 			result <= 0;
+			has_finished <= 0;
+			counting <= start_count;
 		end
 	end
 endmodule

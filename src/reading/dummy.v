@@ -83,7 +83,7 @@ module dummy_reader(
 				has_finished <= 1;
 			end else begin				
 				char <= foo[char_index];
-				char_index <= char_index + 1;
+				char_index <= char_index + 1'b1;
 			end
 		end else if(state_enable == 0) begin
 			has_char <= 0;

@@ -39,7 +39,7 @@ module integer_parser(
 				has_finished <= 1;
 			end else if(!next_char) begin
 				// Read digits, ask for new char
-				value <= (value * 10) + char_val;
+				value <= (value * 10'd10) + char_val;
 				next_char <= 1;
 			end else begin
 				// Wait for new char

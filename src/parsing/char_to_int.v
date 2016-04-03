@@ -11,7 +11,7 @@ module char_to_int(
 );
 	always @(*) begin
 		if (char > 47 && char < 58) begin
-			int_out = char - 48;
+			int_out[`ATTRIBUTE_VAL_BITES] = char - 8'd48;
 		end else begin
 			int_out = 0;
 		end

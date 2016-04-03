@@ -63,7 +63,7 @@ module character_renderer(
 					if(square_state_enabled == 1) begin
 						if(square_state_finished == 1) begin
 							square_state_enabled <= 0;
-							state_pixel_index <= state_pixel_index + 1;
+							state_pixel_index <= state_pixel_index + 1'b1;
 						end
 					end else begin
 						if(decoder_pixels[`FONT_MAX_BIT - state_pixel_index] == 1) begin
@@ -73,7 +73,7 @@ module character_renderer(
 							state_init_square <= 1;
 							
 						end else begin
-							state_pixel_index <= state_pixel_index + 1;
+							state_pixel_index <= state_pixel_index + 1'b1;
 							is_drawing <= 0;
 						end
 	 				end	

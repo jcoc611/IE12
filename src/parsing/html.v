@@ -224,7 +224,7 @@ module html_parser(
 							text_x <= 0;
 							text_y <= text_y + (text_size * `FONT_HEIGHT);
 							rect_x <= rect_margin;
-							rect_y <= text_y + rect_margin;
+							rect_y <= text_y + rect_margin[`Y_BITES];
 
 							text_color <= 0;
 							text_size <= 1;
@@ -232,7 +232,7 @@ module html_parser(
 						end else if (element_out_tag == `TAG_DIV) begin
 							// </div>
 							text_x <= text_padding;
-							text_y <= text_y + rect_margin;
+							text_y <= text_y + rect_margin[`Y_BITES];
 							rect_x <= 0;
 							rect_y <= rect_y + rect_height;
 

@@ -113,7 +113,13 @@ module attribute_type_parser(
 							// Height
 							"e": out_type <= `ATT_HEIGHT;
 							// src : href
-							"r": out_type <= (state_last_char == "s")? `ATT_SRC : `ATT_HREF;
+							"r": begin
+								if (state_last_char == "s") begin
+									out_type <= `ATT_SRC;
+								end else begin
+									out_type <= `ATT_HREF;
+								end
+							end
 							// bg, padding, margin
 							"a": begin
 								if (state_last_char == "b") begin
@@ -128,7 +134,13 @@ module attribute_type_parser(
 								end
 							end
 							// border: position
-							"o": out_type <= (state_last_char == "b")? `ATT_BORDER: `ATT_POSITION;
+							"o": begin
+								if (state_last_char == "b") begin
+									out_type <= `ATT_BORDER;
+								end else begin
+									out_type <= `ATT_POSITION;
+								end
+							end
 							default: state_type_found <= 0;
 						endcase
 						state_last_char <= char;

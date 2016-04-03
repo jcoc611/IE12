@@ -11,8 +11,8 @@ module main(
 		output VGA_CLK,						//	VGA Clock
 		output VGA_HS,						//	VGA H_SYNC
 		output VGA_VS,						//	VGA V_SYNC
-		output VGA_BLANK,						//	VGA BLANK
-		output VGA_SYNC,						//	VGA SYNC
+		output VGA_BLANK_N,						//	VGA BLANK
+		output VGA_SYNC_N,						//	VGA SYNC
 		output	[9:0] VGA_R,						//	VGA Red[9:0]
 		output	[9:0] VGA_G,						//	VGA Green[9:0]
 		output	[9:0] VGA_B							//	VGA Blue[9:0]
@@ -44,22 +44,23 @@ module main(
 			.VGA_B(VGA_B),
 			.VGA_HS(VGA_HS),
 			.VGA_VS(VGA_VS),
-			.VGA_BLANK(VGA_BLANK),
-			.VGA_SYNC(VGA_SYNC),
+			.VGA_BLANK(VGA_BLANK_N),
+			.VGA_SYNC(VGA_SYNC_N),
 			.VGA_CLK(VGA_CLK));
 		defparam VGA.RESOLUTION = "320x240";
 		defparam VGA.MONOCHROME = "FALSE";
 		defparam VGA.BITS_PER_COLOUR_CHANNEL = 1;
 		defparam VGA.BACKGROUND_IMAGE = "white.mif";
 
-	reg att_enable = 0;
+	reg html_enable = 0;
 	reg has_reset = 0;
+	wire eof;
 
 	always @(posedge CLOCK_50) begin
 		if(has_reset) begin
-			att_enable <= 1;
+			html_enable <= 1;
 		end else begin
-			att_enable <= 0;
+			html_enable <= 0;
 			has_reset <= 1;
 		end
 	end
@@ -70,8 +71,8 @@ module main(
 
 	html_parser htmlparse(
 		char,
-		att_enable,
-		~att_enable,
+		html_enable,
+		~html_enable,
 		CLOCK_50,
 
 		// Output

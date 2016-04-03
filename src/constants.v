@@ -13,9 +13,9 @@
 /**
  * Some font settings.
  */
-`define FONT_WIDTH 8
-`define FONT_HEIGHT 16
-`define FONT_KERNING 2
+`define FONT_WIDTH 8'd8
+`define FONT_HEIGHT 8'd16
+`define FONT_KERNING 8'd2
 
 /**
  * The number of bites required to represent
