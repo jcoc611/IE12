@@ -15,7 +15,7 @@
  */
 `define FONT_WIDTH 8'd8
 `define FONT_HEIGHT 8'd16
-`define FONT_KERNING 8'd2
+`define FONT_KERNING 8'd1
 
 /**
  * The number of bites required to represent

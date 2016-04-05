@@ -224,7 +224,7 @@ module html_parser(
 							text_x <= 0;
 							text_y <= text_y + (text_size * `FONT_HEIGHT);
 							rect_x <= rect_margin;
-							rect_y <= text_y + rect_margin[`Y_BITES];
+							rect_y <= text_y + + (text_size * `FONT_HEIGHT) + rect_margin[`Y_BITES];
 
 							text_color <= 0;
 							text_size <= 1;
@@ -273,7 +273,7 @@ module html_parser(
 				element_reset <= 1;
 			end else if(text_enable && text_out_finished) begin
 				text_enable <= 0;
-				text_x = text_x + `FONT_WIDTH + `FONT_KERNING;
+				text_x <= text_x + (text_size * `FONT_WIDTH) + `FONT_KERNING;
 				idle_next_char <= 1;
 			end else if(!idle_next_char) begin
 				if(char == "<") begin
