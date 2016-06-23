@@ -17,19 +17,25 @@ HTML to render is provided through a char array (Verilog wire) in `src/reading/d
 # Sample Output On VGA
 I know the picture is horrible to say in the least. We could not screen grab from the VGA.
 
+![bug image] (https://github.com/jcoc611/IE12/blob/master/images/example0.jpg "")
 
+![bug image] (https://github.com/jcoc611/IE12/blob/master/images/example1.jpg "")
 
 # High Level Circuit Design for this project
+
+![top level circuit design image] (https://github.com/jcoc611/IE12/blob/master/images/topleveldiag.jpg "")
 
 # Bugs we encountered
 We required all the code in our project to operate in a synchronous manner, following the on board 50MHz clock; more often than not different intercommunicating modules would be off by one clock cycle or activate on different edges on the clock.
 
 For example, this is what happened when our parsing module was not communicating properly with the rendering module.
 
+![bug image] (https://github.com/jcoc611/IE12/blob/master/images/bug0.jpg "")
 
 
 Another frequent bug involved the MIF (Memory Intialization File) not "working" properly with the VGA adapter module, resulting in the following instead of a complete white background.
 
+![bug image] (https://github.com/jcoc611/IE12/blob/master/images/bug1.jpg "")
 
 This issue was resolved by changing some critical parameter inside the VGA adapter file.
 
