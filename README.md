@@ -23,7 +23,7 @@ I know the picture is horrible to say in the least. We could not screen grab fro
 
 # High Level Circuit Design for this project
 
-![top level circuit design image] (https://github.com/jcoc611/IE12/blob/master/images/topleveldiag.jpg "")
+![top level circuit design image] (https://github.com/jcoc611/IE12/blob/master/images/topleveldiag.png "")
 
 # Bugs we encountered
 We required all the code in our project to operate in a synchronous manner, following the on board 50MHz clock; more often than not different intercommunicating modules would be off by one clock cycle or activate on different edges on the clock.
